@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Crypto Wallet Analyzer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💰 Анализатор кошелька</h1>
+            <p class="subtitle">Анализ транзакций ETH и USDT</p>
+        </div>
+
+        <div class="card">
+            <div class="token-selector">
+                <button class="token-btn active" data-token="ETH">🔷 ETH</button>
+                <button class="token-btn" data-token="USDT">💵 USDT</button>
+            </div>
+
+            <div class="period-selector">
+                <button class="period-btn active" data-days="7">7 дней</button>
+                <button class="period-btn" data-days="30">30 дней</button>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="walletAddress" placeholder="Введите адрес кошелька (0x...)" autocomplete="off">
+                <button id="analyzeBtn" class="analyze-btn">🔍 Анализировать</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Анализируем кошелек...</p>
+        </div>
+
+        <div id="results" class="results hidden">
+            <div class="balance-card">
+                <span class="label">Баланс</span>
+                <span class="value" id="balance">—</span>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-label">📊 Транзакций</span>
+                    <span class="stat-value" id="txCount">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">⬇️ Получено</span>
+                    <span class="stat-value positive" id="incoming">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">⬆️ Отправлено</span>
+                    <span class="stat-value negative" id="outgoing">—</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-label">⛽ Комиссии</span>
+                    <span class="stat-value" id="gasFees">—</span>
+                </div>
+            </div>
+
+            <div class="insight-card">
+                <span class="insight-icon">💡</span>
+                <span id="insight">—</span>
+            </div>
+
+            <div class="top-section">
+                <div class="top-card">
+                    <h3>🏆 Топ отправителей</h3>
+                    <div id="topSenders" class="top-list">—</div>
+                </div>
+                <div class="top-card">
+                    <h3>🎯 Топ получателей</h3>
+                    <div id="topReceivers" class="top-list">—</div>
+                </div>
+            </div>
+
+            <div id="chartContainer" class="chart-container hidden">
+                <canvas id="txChart"></canvas>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Данные предоставлены Etherscan</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
