@@ -177,7 +177,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [
             InlineKeyboardButton(
                 "🚀 Открыть приложение",
-                web_app=WebAppInfo(url="https://unstubborn-jesse-unvainly.ngrok-free.dev")
+                web_app=WebAppInfo(url="https://crypto-bot-production-d6b8.up.railway.app")
             )
         ]
     ]
