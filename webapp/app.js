@@ -36,7 +36,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     document.getElementById('results').classList.add('hidden');
     
     try {
-        const response = await fetch('http://localhost:5000/analyze', {
+        const response = await fetch('https://crypto-bot-production-d6b8.up.railway.app/analyze', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
