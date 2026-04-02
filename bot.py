@@ -1,24 +1,15 @@
-# bot.py
+# bot.py - только Telegram бот
 import requests
 import time
 import datetime
 import io
-import os
 from collections import Counter
 import matplotlib.pyplot as plt
 import json
 import logging
-from flask import Flask, request, jsonify, send_from_directory
-import threading
-from flask_cors import CORS
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
-
-import sys
-if sys.version_info >= (3, 14):
-    import telegram.ext._updater as _updater
-    if not hasattr(_updater.Updater, '_Updater__polling_cleanup_cb'):
-        _updater.Updater.__polling_cleanup_cb = None
 
 logging.basicConfig(level=logging.INFO)
 
@@ -258,87 +249,10 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         buf = plot_transactions(txs, address)
         await update.message.reply_photo(photo=buf)
 
-async def webapp_data(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    print("=== WEBAPP DATA RECEIVED ===")
-    print(update.message)
-    data = json.loads(update.message.web_app_data.data)
-    print(f"Data: {data}")
-    address = data.get('address')
-    token = data.get('token', 'ETH')
-    days = data.get('days', 7)
-    await update.message.reply_text(f"✅ Запрос получен!\nАдрес: {address}\nТокен: {token}\nДней: {days}")
-
-# Flask сервер
-flask_app = Flask(__name__)
-from flask_cors import CORS
-CORS(flask_app)  # <- Это должно быть здесь, НЕ внутри функции
-
-@flask_app.route('/analyze', methods=['POST', 'OPTIONS'])
-def analyze():
-    if request.method == 'OPTIONS':
-        return '', 200
-    
-    data = request.json
-    address = data.get('address')
-    token = data.get('token', 'ETH')
-    days = int(data.get('days', 7))
-    
-    # Анализ
-    if token == "ETH":
-        balance = get_eth_balance(address)
-        txs = get_recent_transactions(address, days)
-        incoming, outgoing, gas_total, count = analyze_transactions(txs, address)
-    else:
-        balance = get_token_balance(address, USDT_CONTRACT)
-        txs = get_token_transactions(address, USDT_CONTRACT, days)
-        incoming, outgoing = 0, 0
-        for tx in txs:
-            value = int(tx["value"]) / 10**6
-            if tx["to"].lower() == address.lower():
-                incoming += value
-            elif tx["from"].lower() == address.lower():
-                outgoing += value
-        count = len(txs)
-    
-    insight = generate_insights(incoming, outgoing)
-    
-    return jsonify({
-        'balance': round(balance, 6),
-        'txCount': count,
-        'incoming': round(incoming, 6),
-        'outgoing': round(outgoing, 6),
-        'insight': insight
-    })
-
-def run_flask():
-    flask_app.run(port=5000, debug=False, use_reloader=False)
-
-time.sleep(1)
-threading.Thread(target=run_flask, daemon=True).start()
-print("Flask запущен на порту 5000")
-
-web_app = Flask(__name__, static_folder='webapp')
-
-@web_app.route('/')
-def index():
-    return send_from_directory('webapp', 'index.html')
-
-@web_app.route('/<path:path>')
-def static_files(path):
-    return send_from_directory('webapp', path)
-
-def run_web():
-    web_app.run(host='0.0.0.0', port=8080)
-
-threading.Thread(target=run_web, daemon=True).start()
-
-
 app = ApplicationBuilder().token(TOKEN).build()
-app.updater._Updater__polling_cleanup_cb = None  # Костыль для Render
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(CallbackQueryHandler(button_callback))
-app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, webapp_data))
 
 print("Бот запущен...")
 app.run_polling()
