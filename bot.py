@@ -1,4 +1,6 @@
-# bot.py
+# ==========================================
+# 1. ИМПОРТЫ
+# ==========================================
 import requests
 import time
 import datetime
@@ -14,12 +16,18 @@ import os
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 
+# ==========================================
+# 2. НАСТРОЙКИ И КОНСТАНТЫ
+# ==========================================
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
 ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
 USDT_CONTRACT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
+# ==========================================
+# 3. ФУНКЦИИ ДЛЯ РАБОТЫ С ETHERSCAN
+# ==========================================
 def get_eth_balance(address: str):
     url = "https://api.etherscan.io/v2/api"
     params = {
@@ -96,6 +104,9 @@ def get_token_balance(address, contract=USDT_CONTRACT):
         return 0
     return int(data["result"]) / 10**6
 
+# ==========================================
+# 4. АНАЛИЗ ТРАНЗАКЦИЙ
+# ==========================================
 def analyze_transactions(txs, address):
     incoming = 0
     outgoing = 0
@@ -133,6 +144,9 @@ def top_addresses(txs, address, n=3, decimals=18):
             outgoing[to] += value
     return incoming.most_common(n), outgoing.most_common(n)
 
+# ==========================================
+# 5. ГРАФИКИ
+# ==========================================
 def plot_transactions(txs, address):
     flows = {}
     for tx in txs:
@@ -162,7 +176,9 @@ def plot_transactions(txs, address):
     plt.close()
     return buf
 
-# ---------- Telegram бот ----------
+# ==========================================
+# 6. TELEGRAM БОТ (ОБРАБОТЧИКИ)
+# ==========================================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     keyboard = [
@@ -214,14 +230,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         txs = get_token_transactions(address, USDT_CONTRACT, days)
         incoming, outgoing = 0, 0
         for tx in txs:
-            value = int(tx["value"]) / 10**6  # <- здесь уже 6
+            value = int(tx["value"]) / 10**6
             if tx["to"].lower() == address.lower():
                 incoming += value
             elif tx["from"].lower() == address.lower():
                 outgoing += value
         gas_total = 0
         count = len(txs)
-        decimals = 6  # <- добавь эту строку
+        decimals = 6
     insight = generate_insights(incoming, outgoing)
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
     top_in_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_in]) or "нет"
@@ -232,7 +248,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         buf = plot_transactions(txs, address)
         await update.message.reply_photo(photo=buf)
 
-# ---------- Flask для веб-приложения ----------
+# ==========================================
+# 7. FLASK ДЛЯ ВЕБ-ПРИЛОЖЕНИЯ
+# ==========================================
 flask_app = Flask(__name__, static_folder='webapp', static_url_path='')
 
 @flask_app.route('/')
@@ -286,7 +304,9 @@ def run_flask():
 
 threading.Thread(target=run_flask, daemon=True).start()
 
-# ---------- Запуск Telegram бота ----------
+# ==========================================
+# 8. ЗАПУСК TELEGRAM БОТА
+# ==========================================
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
