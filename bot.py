@@ -104,7 +104,7 @@ def get_token_balance(address, contract=USDT_CONTRACT):
     return int(data["result"]) / 10**6
 
 def get_eth_transactions_analysis(address, days):
-    """Получает и анализирует ETH транзакции за указанный период"""
+    """Receives and analyzes ETH transactions for a specified period..."""
     txs = get_recent_transactions(address, days)
     incoming = 0
     outgoing = 0
@@ -117,7 +117,7 @@ def get_eth_transactions_analysis(address, days):
     return incoming, outgoing, len(txs), txs
 
 def get_usdt_transactions_analysis(address, days):
-    """Получает и анализирует USDT транзакции за указанный период"""
+    """Receives and analyzes USDT transactions for a specified period..."""
     txs = get_token_transactions(address, USDT_CONTRACT, days)
     incoming = 0
     outgoing = 0
@@ -131,11 +131,11 @@ def get_usdt_transactions_analysis(address, days):
 
 def generate_insights(incoming, outgoing):
     if incoming > outgoing:
-        return "Ты больше получаешь, чем отправляешь"
+        return "You receive more than you send"
     elif outgoing > incoming:
-        return "Ты больше тратишь, чем получаешь"
+        return "You spend more than you receive"
     else:
-        return "Баланс потоков примерно равный"
+        return "Balance of flows is approximately equal"
 
 def top_addresses(txs, address, n=3, decimals=18):
     incoming = Counter()
