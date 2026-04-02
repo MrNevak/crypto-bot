@@ -57,11 +57,20 @@ body {
     background: #2a2a2a;
     color: #ffffff;
     transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 .token-btn.active, .period-btn.active {
     background: #3390ec;
     color: #ffffff;
+}
+
+.token-icon {
+    width: 24px;
+    height: 24px;
 }
 
 .input-group {
@@ -243,16 +252,4 @@ body {
 
 .hidden {
     display: none;
-}
-
-.token-svg {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-}
-
-.token-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
