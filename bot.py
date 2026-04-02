@@ -312,10 +312,20 @@ def analyze():
 def run_flask():
     flask_app.run(port=5000, debug=False, use_reloader=False)
 
-import time
 time.sleep(1)
 threading.Thread(target=run_flask, daemon=True).start()
 print("Flask запущен на порту 5000")
+
+health_app = Flask(__name__)
+
+@health_app.route('/')
+def health():
+    return "OK", 200
+
+def run_health():
+    health_app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_health, daemon=True).start()
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.updater._Updater__polling_cleanup_cb = None  # Костыль для Render
