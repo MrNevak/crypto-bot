@@ -13,6 +13,12 @@ from flask_cors import CORS
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
 
+import sys
+if sys.version_info >= (3, 14):
+    import telegram.ext._updater as _updater
+    if not hasattr(_updater.Updater, '_Updater__polling_cleanup_cb'):
+        _updater.Updater.__polling_cleanup_cb = None
+
 logging.basicConfig(level=logging.INFO)
 
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
@@ -312,6 +318,7 @@ threading.Thread(target=run_flask, daemon=True).start()
 print("Flask запущен на порту 5000")
 
 app = ApplicationBuilder().token(TOKEN).build()
+app.updater._Updater__polling_cleanup_cb = None  # Костыль для Render
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 app.add_handler(CallbackQueryHandler(button_callback))
