@@ -245,11 +245,10 @@ body {
     display: none;
 }
 
-.token-icon {
-    width: 20px;
-    height: 20px;
+.token-svg {
+    width: 24px;
+    height: 24px;
     margin-right: 8px;
-    vertical-align: middle;
 }
 
 .token-btn {
