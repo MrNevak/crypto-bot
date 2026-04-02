@@ -1,4 +1,4 @@
-# bot.py - только Telegram бот
+# bot.py
 import requests
 import time
 import datetime
@@ -7,6 +7,9 @@ from collections import Counter
 import matplotlib.pyplot as plt
 import json
 import logging
+from flask import Flask, request, jsonify, send_from_directory
+import threading
+import os
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
@@ -159,6 +162,7 @@ def plot_transactions(txs, address):
     plt.close()
     return buf
 
+# ---------- Telegram бот ----------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data.clear()
     keyboard = [
@@ -183,27 +187,14 @@ async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     chat_id = query.message.chat_id
     if data.startswith("token_"):
         context.user_data["token"] = data.split("_")[1]
-        keyboard = [
-            [
-                InlineKeyboardButton("7 дней", callback_data="days_7"),
-                InlineKeyboardButton("30 дней", callback_data="days_30"),
-            ]
-        ]
+        keyboard = [[InlineKeyboardButton("7 дней", callback_data="days_7"), InlineKeyboardButton("30 дней", callback_data="days_30")]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        await context.bot.send_message(
-            chat_id=chat_id, 
-            text=f"Выбран токен: {context.user_data['token']}\nТеперь выберите период:", 
-            reply_markup=reply_markup
-        )
-        return
+        await context.bot.send_message(chat_id=chat_id, text=f"Выбран токен: {context.user_data['token']}\nТеперь выберите период:", reply_markup=reply_markup)
     elif data.startswith("days_"):
         context.user_data["days"] = int(data.split("_")[1])
         token = context.user_data.get("token", "ETH")
         days = context.user_data.get("days", 7)
-        await context.bot.send_message(
-            chat_id=chat_id,
-            text=f"Выбран токен: {token}\nПериод: {days} дней\nТеперь отправь адрес кошелька."
-        )
+        await context.bot.send_message(chat_id=chat_id, text=f"Выбран токен: {token}\nПериод: {days} дней\nТеперь отправь адрес кошелька.")
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     address = update.message.text.strip()
@@ -234,21 +225,67 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
     top_in_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_in]) or "нет"
     top_out_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_out]) or "нет"
-    msg = (
-        f"Баланс: {balance:.6f} {token}\n\n"
-        f"Транзакций: {count}\n"
-        f"Получено: {incoming:.6f} {token}\n"
-        f"Отправлено: {outgoing:.6f} {token}\n"
-        f"Комиссии: {gas_total:.6f} ETH\n\n"
-        f"Инсайт: {insight}\n\n"
-        f"Топ отправителей:\n{top_in_text}\n\n"
-        f"Топ получателей:\n{top_out_text}"
-    )
+    msg = (f"Баланс: {balance:.6f} {token}\n\nТранзакций: {count}\nПолучено: {incoming:.6f} {token}\nОтправлено: {outgoing:.6f} {token}\nКомиссии: {gas_total:.6f} ETH\n\nИнсайт: {insight}\n\nТоп отправителей:\n{top_in_text}\n\nТоп получателей:\n{top_out_text}")
     await update.message.reply_text(msg)
     if txs and token == "ETH":
         buf = plot_transactions(txs, address)
         await update.message.reply_photo(photo=buf)
 
+# ---------- Flask для веб-приложения ----------
+flask_app = Flask(__name__, static_folder='webapp', static_url_path='')
+
+@flask_app.route('/')
+def index():
+    return send_from_directory('webapp', 'index.html')
+
+@flask_app.route('/<path:path>')
+def serve_static(path):
+    return send_from_directory('webapp', path)
+
+@flask_app.route('/analyze', methods=['POST'])
+def analyze():
+    data = request.json
+    address = data.get('address')
+    token = data.get('token', 'ETH')
+    days = int(data.get('days', 7))
+    
+    decimals = 18 if token == "ETH" else 6
+    if token == "ETH":
+        balance = get_eth_balance(address)
+        txs = get_recent_transactions(address, days)
+        incoming, outgoing, gas_total, count = analyze_transactions(txs, address)
+    else:
+        balance = get_token_balance(address, USDT_CONTRACT)
+        txs = get_token_transactions(address, USDT_CONTRACT, days)
+        incoming, outgoing = 0, 0
+        for tx in txs:
+            value = int(tx["value"]) / 10**6
+            if tx["to"].lower() == address.lower():
+                incoming += value
+            elif tx["from"].lower() == address.lower():
+                outgoing += value
+        gas_total = 0
+        count = len(txs)
+    
+    insight = generate_insights(incoming, outgoing)
+    top_in, top_out = top_addresses(txs, address, decimals=decimals)
+    
+    return jsonify({
+        'balance': round(balance, 6),
+        'txCount': count,
+        'incoming': round(incoming, 6),
+        'outgoing': round(outgoing, 6),
+        'insight': insight,
+        'topSenders': [[addr, val] for addr, val in top_in],
+        'topReceivers': [[addr, val] for addr, val in top_out]
+    })
+
+def run_flask():
+    flask_app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_flask, daemon=True).start()
+
+# ---------- Запуск Telegram бота ----------
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
