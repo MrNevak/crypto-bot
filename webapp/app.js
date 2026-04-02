@@ -26,7 +26,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     const address = document.getElementById('walletAddress').value.trim();
     
     if (!address || !address.startsWith('0x') || address.length !== 42) {
-        tg.showPopup({ title: 'Ошибка', message: 'Введите корректный адрес 0x...', buttons: [{type: 'ok'}] });
+        tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
         return;
     }
     
@@ -45,7 +45,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
         displayResults(data);
     } catch (error) {
         document.getElementById('loading').classList.add('hidden');
-        tg.showPopup({ title: 'Ошибка', message: 'Не удалось подключиться к серверу', buttons: [{type: 'ok'}] });
+        tg.showPopup({ title: 'Error', message: 'Failed to connect to server', buttons: [{type: 'ok'}] });
     }
 });
 
@@ -62,7 +62,7 @@ function displayResults(data) {
             `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
         ).join('');
     } else {
-        document.getElementById('topSenders').innerHTML = 'нет данных';
+        document.getElementById('topSenders').innerHTML = 'no data';
     }
     
     if (data.topReceivers && data.topReceivers.length > 0) {
@@ -70,7 +70,7 @@ function displayResults(data) {
             `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
         ).join('');
     } else {
-        document.getElementById('topReceivers').innerHTML = 'нет данных';
+        document.getElementById('topReceivers').innerHTML = 'no data';
     }
     
     document.getElementById('results').classList.remove('hidden');
