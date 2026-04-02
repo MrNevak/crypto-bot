@@ -214,13 +214,14 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         txs = get_token_transactions(address, USDT_CONTRACT, days)
         incoming, outgoing = 0, 0
         for tx in txs:
-            value = int(tx["value"]) / 10**6
+            value = int(tx["value"]) / 10**6  # <- здесь уже 6
             if tx["to"].lower() == address.lower():
                 incoming += value
             elif tx["from"].lower() == address.lower():
                 outgoing += value
         gas_total = 0
         count = len(txs)
+        decimals = 6  # <- добавь эту строку
     insight = generate_insights(incoming, outgoing)
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
     top_in_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_in]) or "нет"
