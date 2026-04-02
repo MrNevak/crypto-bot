@@ -3,11 +3,12 @@ import requests
 import time
 import datetime
 import io
+import os
 from collections import Counter
 import matplotlib.pyplot as plt
 import json
 import logging
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 import threading
 from flask_cors import CORS
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
@@ -316,16 +317,21 @@ time.sleep(1)
 threading.Thread(target=run_flask, daemon=True).start()
 print("Flask запущен на порту 5000")
 
-health_app = Flask(__name__)
+web_app = Flask(__name__, static_folder='webapp')
 
-@health_app.route('/')
-def health():
-    return "OK", 200
+@web_app.route('/')
+def index():
+    return send_from_directory('webapp', 'index.html')
 
-def run_health():
-    health_app.run(host='0.0.0.0', port=8080)
+@web_app.route('/<path:path>')
+def static_files(path):
+    return send_from_directory('webapp', path)
 
-threading.Thread(target=run_health, daemon=True).start()
+def run_web():
+    web_app.run(host='0.0.0.0', port=8080)
+
+threading.Thread(target=run_web, daemon=True).start()
+
 
 app = ApplicationBuilder().token(TOKEN).build()
 app.updater._Updater__polling_cleanup_cb = None  # Костыль для Render
