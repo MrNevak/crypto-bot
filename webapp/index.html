@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -10,8 +10,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💰 Анализатор кошелька</h1>
-            <p class="subtitle">Анализ транзакций ETH и USDT</p>
+            <h1>💰 Crypto Wallet Analyzer</h1>
+            <p class="subtitle">Analyze ETH and USDT transactions</p>
         </div>
 
         <div class="card">
@@ -21,42 +21,42 @@
             </div>
 
             <div class="period-selector">
-                <button class="period-btn active" data-days="7">7 дней</button>
-                <button class="period-btn" data-days="30">30 дней</button>
+                <button class="period-btn active" data-days="7">7 days</button>
+                <button class="period-btn" data-days="30">30 days</button>
             </div>
 
             <div class="input-group">
-                <input type="text" id="walletAddress" placeholder="Введите адрес кошелька (0x...)" autocomplete="off">
-                <button id="analyzeBtn" class="analyze-btn">🔍 Анализировать</button>
+                <input type="text" id="walletAddress" placeholder="Enter wallet address (0x...)" autocomplete="off">
+                <button id="analyzeBtn" class="analyze-btn">🔍 Analyze</button>
             </div>
         </div>
 
         <div id="loading" class="loading hidden">
             <div class="spinner"></div>
-            <p>Анализируем кошелек...</p>
+            <p>Analyzing wallet...</p>
         </div>
 
         <div id="results" class="results hidden">
             <div class="balance-card">
-                <span class="label">Баланс</span>
+                <span class="label">Balance</span>
                 <span class="value" id="balance">—</span>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-card">
-                    <span class="stat-label">📊 Транзакций</span>
+                    <span class="stat-label">📊 Transactions</span>
                     <span class="stat-value" id="txCount">—</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">⬇️ Получено</span>
+                    <span class="stat-label">⬇️ Received</span>
                     <span class="stat-value positive" id="incoming">—</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">⬆️ Отправлено</span>
+                    <span class="stat-label">⬆️ Sent</span>
                     <span class="stat-value negative" id="outgoing">—</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-label">⛽ Комиссии</span>
+                    <span class="stat-label">⛽ Gas Fees</span>
                     <span class="stat-value" id="gasFees">—</span>
                 </div>
             </div>
@@ -68,11 +68,11 @@
 
             <div class="top-section">
                 <div class="top-card">
-                    <h3>🏆 Топ отправителей</h3>
+                    <h3>🏆 Top Senders</h3>
                     <div id="topSenders" class="top-list">—</div>
                 </div>
                 <div class="top-card">
-                    <h3>🎯 Топ получателей</h3>
+                    <h3>🎯 Top Receivers</h3>
                     <div id="topReceivers" class="top-list">—</div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
         </div>
 
         <div class="footer">
-            <p>Данные предоставлены Etherscan</p>
+            <p>Data provided by Etherscan</p>
         </div>
     </div>
 
