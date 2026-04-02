@@ -11,10 +11,9 @@ import json
 import logging
 from flask import Flask, request, jsonify, send_from_directory
 import threading
-import os
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, WebAppInfo
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes, CallbackQueryHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
 # ==========================================
 # 2. НАСТРОЙКИ И КОНСТАНТЫ
@@ -104,22 +103,31 @@ def get_token_balance(address, contract=USDT_CONTRACT):
         return 0
     return int(data["result"]) / 10**6
 
-# ==========================================
-# 4. АНАЛИЗ ТРАНЗАКЦИЙ
-# ==========================================
-def analyze_transactions(txs, address):
+def get_eth_transactions_analysis(address, days):
+    """Получает и анализирует ETH транзакции за указанный период"""
+    txs = get_recent_transactions(address, days)
     incoming = 0
     outgoing = 0
-    gas_total = 0
     for tx in txs:
         value_eth = int(tx["value"]) / 10**18
-        gas_fee = int(tx.get("gasUsed", 0)) * int(tx.get("gasPrice", 0)) / 10**18
         if tx["to"] and tx["to"].lower() == address.lower():
             incoming += value_eth
         elif tx["from"] and tx["from"].lower() == address.lower():
             outgoing += value_eth
-            gas_total += gas_fee
-    return incoming, outgoing, gas_total, len(txs)
+    return incoming, outgoing, len(txs), txs
+
+def get_usdt_transactions_analysis(address, days):
+    """Получает и анализирует USDT транзакции за указанный период"""
+    txs = get_token_transactions(address, USDT_CONTRACT, days)
+    incoming = 0
+    outgoing = 0
+    for tx in txs:
+        value = int(tx["value"]) / 10**6
+        if tx["to"].lower() == address.lower():
+            incoming += value
+        elif tx["from"].lower() == address.lower():
+            outgoing += value
+    return incoming, outgoing, len(txs), txs
 
 def generate_insights(incoming, outgoing):
     if incoming > outgoing:
@@ -145,111 +153,14 @@ def top_addresses(txs, address, n=3, decimals=18):
     return incoming.most_common(n), outgoing.most_common(n)
 
 # ==========================================
-# 5. ГРАФИКИ
-# ==========================================
-def plot_transactions(txs, address):
-    flows = {}
-    for tx in txs:
-        ts = int(tx["timeStamp"])
-        day = datetime.datetime.utcfromtimestamp(ts).strftime("%Y-%m-%d")
-        value_eth = int(tx["value"]) / 10**18
-        if day not in flows:
-            flows[day] = {"in": 0, "out": 0}
-        if tx["to"].lower() == address.lower():
-            flows[day]["in"] += value_eth
-        elif tx["from"].lower() == address.lower():
-            flows[day]["out"] += value_eth
-    days = sorted(flows.keys())
-    incoming = [flows[d]["in"] for d in days]
-    outgoing = [flows[d]["out"] for d in days]
-    plt.figure(figsize=(8,4))
-    plt.bar(days, incoming, label="Incoming", color="green")
-    plt.bar(days, outgoing, label="Outgoing", bottom=incoming, color="red")
-    plt.xticks(rotation=45)
-    plt.ylabel("ETH")
-    plt.title("Транзакции за последние дни")
-    plt.legend()
-    plt.tight_layout()
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png")
-    buf.seek(0)
-    plt.close()
-    return buf
-
-# ==========================================
-# 6. TELEGRAM БОТ (ОБРАБОТЧИКИ)
+# 4. TELEGRAM БОТ (ТОЛЬКО КНОПКА)
 # ==========================================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    context.user_data.clear()
-    keyboard = [
-        [
-            InlineKeyboardButton("ETH", callback_data="token_ETH"),
-            InlineKeyboardButton("USDT", callback_data="token_USDT"),
-        ],
-        [
-            InlineKeyboardButton(
-                "🚀 Открыть приложение",
-                web_app=WebAppInfo(url="https://crypto-bot-production-d6b8.up.railway.app")
-            )
-        ]
-    ]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("Выберите токен или откройте приложение:", reply_markup=reply_markup)
-
-async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
-    await query.answer()
-    data = query.data
-    chat_id = query.message.chat_id
-    if data.startswith("token_"):
-        context.user_data["token"] = data.split("_")[1]
-        keyboard = [[InlineKeyboardButton("7 дней", callback_data="days_7"), InlineKeyboardButton("30 дней", callback_data="days_30")]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        await context.bot.send_message(chat_id=chat_id, text=f"Выбран токен: {context.user_data['token']}\nТеперь выберите период:", reply_markup=reply_markup)
-    elif data.startswith("days_"):
-        context.user_data["days"] = int(data.split("_")[1])
-        token = context.user_data.get("token", "ETH")
-        days = context.user_data.get("days", 7)
-        await context.bot.send_message(chat_id=chat_id, text=f"Выбран токен: {token}\nПериод: {days} дней\nТеперь отправь адрес кошелька.")
-
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    address = update.message.text.strip()
-    token = context.user_data.get("token", "ETH")
-    days = context.user_data.get("days", 7)
-    if not (address.startswith("0x") and len(address) == 42):
-        await update.message.reply_text("Некорректный адрес")
-        return
-    await update.message.reply_text(f"Анализирую {token} за {days} дней...")
-    decimals = 18 if token == "ETH" else 6
-    if token == "ETH":
-        balance = get_eth_balance(address)
-        txs = get_recent_transactions(address, days)
-        incoming, outgoing, gas_total, count = analyze_transactions(txs, address)
-    else:
-        balance = get_token_balance(address, USDT_CONTRACT)
-        txs = get_token_transactions(address, USDT_CONTRACT, days)
-        incoming, outgoing = 0, 0
-        for tx in txs:
-            value = int(tx["value"]) / 10**6
-            if tx["to"].lower() == address.lower():
-                incoming += value
-            elif tx["from"].lower() == address.lower():
-                outgoing += value
-        gas_total = 0
-        count = len(txs)
-        decimals = 6
-    insight = generate_insights(incoming, outgoing)
-    top_in, top_out = top_addresses(txs, address, decimals=decimals)
-    top_in_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_in]) or "нет"
-    top_out_text = "\n".join([f"{addr}: {val:.4f} {token}" for addr, val in top_out]) or "нет"
-    msg = (f"Баланс: {balance:.6f} {token}\n\nТранзакций: {count}\nПолучено: {incoming:.6f} {token}\nОтправлено: {outgoing:.6f} {token}\nКомиссии: {gas_total:.6f} ETH\n\nИнсайт: {insight}\n\nТоп отправителей:\n{top_in_text}\n\nТоп получателей:\n{top_out_text}")
-    await update.message.reply_text(msg)
-    if txs and token == "ETH":
-        buf = plot_transactions(txs, address)
-        await update.message.reply_photo(photo=buf)
+    keyboard = [[InlineKeyboardButton("🚀 Открыть приложение", web_app=WebAppInfo(url="https://crypto-bot-production-d6b8.up.railway.app"))]]
+    await update.message.reply_text("Нажмите кнопку:", reply_markup=InlineKeyboardMarkup(keyboard))
 
 # ==========================================
-# 7. FLASK ДЛЯ ВЕБ-ПРИЛОЖЕНИЯ
+# 5. FLASK ДЛЯ ВЕБ-ПРИЛОЖЕНИЯ
 # ==========================================
 flask_app = Flask(__name__, static_folder='webapp', static_url_path='')
 
@@ -268,23 +179,14 @@ def analyze():
     token = data.get('token', 'ETH')
     days = int(data.get('days', 7))
     
-    decimals = 18 if token == "ETH" else 6
     if token == "ETH":
         balance = get_eth_balance(address)
-        txs = get_recent_transactions(address, days)
-        incoming, outgoing, gas_total, count = analyze_transactions(txs, address)
+        incoming, outgoing, count, txs = get_eth_transactions_analysis(address, days)
+        decimals = 18
     else:
         balance = get_token_balance(address, USDT_CONTRACT)
-        txs = get_token_transactions(address, USDT_CONTRACT, days)
-        incoming, outgoing = 0, 0
-        for tx in txs:
-            value = int(tx["value"]) / 10**6
-            if tx["to"].lower() == address.lower():
-                incoming += value
-            elif tx["from"].lower() == address.lower():
-                outgoing += value
-        gas_total = 0
-        count = len(txs)
+        incoming, outgoing, count, txs = get_usdt_transactions_analysis(address, days)
+        decimals = 6
     
     insight = generate_insights(incoming, outgoing)
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
@@ -305,12 +207,10 @@ def run_flask():
 threading.Thread(target=run_flask, daemon=True).start()
 
 # ==========================================
-# 8. ЗАПУСК TELEGRAM БОТА
+# 6. ЗАПУСК TELEGRAM БОТА
 # ==========================================
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
-app.add_handler(CallbackQueryHandler(button_callback))
 
 print("Бот запущен...")
 app.run_polling()
