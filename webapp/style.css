@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background: #0a0a0a;
+    background: #000000;
     color: #ffffff;
     padding: 16px;
 }
@@ -14,6 +14,65 @@ body {
 .container {
     max-width: 500px;
     margin: 0 auto;
+}
+
+/* ========== ПРИВЕТСТВЕННЫЙ ЭКРАН ========== */
+#welcomeScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.welcome-content {
+    text-align: center;
+    padding: 20px;
+}
+
+.welcome-logo-area {
+    margin-bottom: 48px;
+}
+
+.welcome-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+    object-fit: cover;
+    margin-bottom: 24px;
+}
+
+.welcome-title {
+    font-size: 36px;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+
+.start-work-btn {
+    padding: 16px 48px;
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    border-radius: 40px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.start-work-btn:hover {
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    color: #0a0a0a;
+    box-shadow: 0 0 20px rgba(212, 196, 168, 0.3);
 }
 
 /* ========== ХЕДЕР ========== */
@@ -35,6 +94,68 @@ body {
 .subtitle {
     color: #888888;
     font-size: 14px;
+}
+
+/* ========== ЛОГОТИП И ЗАГОЛОВОК ========== */
+.logo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.logo-area h1 {
+    font-size: 24px;
+    margin-bottom: 0;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ========== ЗАГОЛОВОК СЕКЦИИ ========== */
+.section-title {
+    font-size: 24px;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ========== КНОПКА BACK НА ОСНОВНОМ ЭКРАНЕ ========== */
+.back-text-main {
+    position: absolute;
+    left: 0;
+    top: 0;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    text-decoration: none;
+    border: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+.back-text-main:hover {
+    opacity: 0.6;
+}
+
+.back-text-main:active {
+    opacity: 0.3;
 }
 
 /* ========== ЛАУНЧЕР КАРТОЧКИ ========== */
@@ -115,30 +236,6 @@ body {
 
 .launcher-card:hover .card-glow {
     left: 100%;
-}
-
-/* ========== КНОПКА НАЗАД ========== */
-.back-text {
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    text-decoration: none;
-    position: absolute;
-    left: 20px;
-    top: 20px;
-}
-
-.back-text:hover {
-    opacity: 0.6;
-}
-
-.back-text:active {
-    opacity: 0.3;
 }
 
 /* ========== КАРТОЧКА ОСНОВНАЯ ========== */
@@ -408,14 +505,14 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: #0a0a0a;
+    background: #000000;
     display: flex;
     flex-direction: column;
     z-index: 1000;
 }
 
 .modal-content {
-    background: #0a0a0a;
+    background: #000000;
     width: 100%;
     height: 100%;
     display: flex;
@@ -474,127 +571,6 @@ body {
     max-height: 60vh;
 }
 
-/* ========== ЛОГОТИП И ЗАГОЛОВОК ========== */
-.logo-area {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 8px;
-}
-
-.logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.logo-area h1 {
-    font-size: 24px;
-    margin-bottom: 0;
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
-
-/* ========== КНОПКА BACK НА ОСНОВНОМ ЭКРАНЕ ========== */
-.back-text-main {
-    position: absolute;
-    left: 0;
-    top: 0;
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    text-decoration: none;
-    border: none;
-    background-color: transparent;
-    padding: 0;
-}
-
-.back-text-main:hover {
-    opacity: 0.6;
-}
-
-.back-text-main:active {
-    opacity: 0.3;
-}
-
-/* ========== ПРИВЕТСТВЕННЫЙ ЭКРАН ========== */
-#welcomeScreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #000000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 2000;
-}
-
-.welcome-content {
-    text-align: center;
-    padding: 20px;
-}
-
-.welcome-logo-area {
-    margin-bottom: 48px;
-}
-
-.welcome-logo {
-    width: 120px;
-    height: 120px;
-    border-radius: 60px;
-    object-fit: cover;
-    margin-bottom: 24px;
-    box-shadow: 0 0 30px rgba(212, 196, 168, 0.3);
-}
-
-.welcome-title {
-    font-size: 36px;
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    margin: 0;
-}
-
-.start-work-btn {
-    padding: 16px 48px;
-    background: #1a1a1a;
-    color: #ffffff;
-    border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
-    border-radius: 40px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.start-work-btn:hover {
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    color: #0a0a0a;
-    box-shadow: 0 0 20px rgba(212, 196, 168, 0.3);
-}
-
-/* ========== ЗАГОЛОВОК СЕКЦИИ ========== */
-.section-title {
-    font-size: 24px;
-    margin-bottom: 4px;
-    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-}
 /* ========== УТИЛИТЫ ========== */
 .hidden {
     display: none;
