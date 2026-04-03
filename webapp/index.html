@@ -20,62 +20,84 @@
             </div>
         </div>
 
-        <!-- LAUNCHER SCREEN (OPTIONS) -->
-        <div id="startScreen" class="hidden">
+        <!-- COIN SELECTION SCREEN -->
+        <div id="coinScreen" class="hidden">
             <div class="header">
-                <h1 class="options-title">Options</h1>
-                <p class="subtitle">Choose what you want to do</p>
+                <h1 class="options-title">Select Coin</h1>
+                <p class="subtitle">Choose cryptocurrency to analyze</p>
             </div>
 
-            <div class="launcher-cards">
-                <div class="launcher-card" id="analyzeCard">
-                    <div class="card-icon">📊</div>
-                    <h2>Analyze Wallet</h2>
-                    <p>Check balance, transactions and get insights</p>
-                    <div class="card-glow"></div>
+            <div class="coins-grid">
+                <div class="coin-card" data-coin="BTC">
+                    <div class="coin-icon">₿</div>
+                    <h3>Bitcoin</h3>
+                    <p>BTC</p>
                 </div>
-
-                <div class="launcher-card disabled" id="portfolioCard">
-                    <div class="card-icon">📈</div>
-                    <h2>Portfolio Tracker</h2>
-                    <p>Coming soon</p>
-                    <div class="soon-badge">Soon</div>
-                    <div class="card-glow"></div>
+                <div class="coin-card" data-coin="ETH">
+                    <div class="coin-icon">⟠</div>
+                    <h3>Ethereum</h3>
+                    <p>ETH</p>
+                </div>
+                <div class="coin-card" data-coin="USDT">
+                    <div class="coin-icon">₮</div>
+                    <h3>Tether</h3>
+                    <p>USDT</p>
+                </div>
+                <div class="coin-card" data-coin="BNB">
+                    <div class="coin-icon">🟡</div>
+                    <h3>BNB</h3>
+                    <p>BNB</p>
+                </div>
+                <div class="coin-card" data-coin="SOL">
+                    <div class="coin-icon">◎</div>
+                    <h3>Solana</h3>
+                    <p>SOL</p>
+                </div>
+                <div class="coin-card" data-coin="TON">
+                    <div class="coin-icon">⍟</div>
+                    <h3>Toncoin</h3>
+                    <p>TON</p>
                 </div>
             </div>
 
             <div class="footer">
-                <p>Data provided by Etherscan</p>
+                <p>Select a coin to continue</p>
+            </div>
+        </div>
+
+        <!-- NETWORK SELECTION SCREEN -->
+        <div id="networkScreen" class="hidden">
+            <div class="header">
+                <button id="backToCoin" class="back-text-main">← Back</button>
+                <h1 class="options-title">Select Network</h1>
+                <p class="subtitle" id="selectedCoinName"></p>
+            </div>
+
+            <div id="networksList" class="networks-grid">
+                <!-- Networks will be added dynamically -->
+            </div>
+
+            <div class="footer">
+                <p>Select network for analysis</p>
             </div>
         </div>
 
         <!-- ANALYSIS SCREEN -->
         <div id="mainScreen" class="hidden">
             <div class="header">
-                <button id="backToStart" class="back-text-main">← Back</button>
-                <h2 class="section-title">Wallet Analysis</h2>
-                <p class="subtitle">Analyze ETH and USDT transactions</p>
+                <button id="backToNetwork" class="back-text-main">← Back</button>
+                <h2 class="section-title" id="analysisTitle">Wallet Analysis</h2>
+                <p class="subtitle" id="analysisSubtitle"></p>
+            </div>
+
+            <div class="period-selector analysis-period">
+                <button class="period-btn" data-days="7">7 days</button>
+                <button class="period-btn active" data-days="30">30 days</button>
             </div>
 
             <div class="card">
-                <div class="token-selector">
-                    <button class="token-btn active" data-token="ETH">
-                        <img src="icons/ethereum-eth-logo.svg" class="token-icon" alt="ETH">
-                        ETH
-                    </button>
-                    <button class="token-btn" data-token="USDT">
-                        <img src="icons/tether-usdt-logo.svg" class="token-icon" alt="USDT">
-                        USDT
-                    </button>
-                </div>
-
-                <div class="period-selector">
-                    <button class="period-btn active" data-days="7">7 days</button>
-                    <button class="period-btn" data-days="30">30 days</button>
-                </div>
-
                 <div class="input-group">
-                    <input type="text" id="walletAddress" placeholder="Enter wallet address (0x...)" autocomplete="off">
+                    <input type="text" id="walletAddress" placeholder="Enter wallet address" autocomplete="off">
                     <button id="analyzeBtn" class="analyze-btn">🔍 Analyze</button>
                     <button id="showChartBtn" class="analyze-btn hidden" style="margin-top: 8px;">📊 Show Chart</button>
                 </div>
@@ -129,7 +151,7 @@
             </div>
 
             <div class="footer">
-                <p>Data provided by Etherscan</p>
+                <p>Data provided by Blockchain APIs</p>
             </div>
         </div>
     </div>
