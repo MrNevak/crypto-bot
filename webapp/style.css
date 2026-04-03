@@ -519,6 +519,37 @@ body {
     display: none;
 }
 
+/* Options title */
+.options-title {
+    font-size: 32px;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* Убираем окантовку с input */
+#walletAddress {
+    padding: 14px;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #ffffff;
+    font-family: monospace;
+}
+
+#walletAddress:focus {
+    outline: none;
+    border-color: #D4C4A8;
+    box-shadow: none;
+}
+
+#walletAddress::placeholder {
+    color: #555555;
+}
+
 /* ========== МОДАЛЬНОЕ ОКНО ========== */
 .modal {
     position: fixed;
