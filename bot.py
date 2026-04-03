@@ -24,7 +24,7 @@ logging.basicConfig(level=logging.INFO)
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
 ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
 
-# Chain IDs для Etherscan API V2 (https://docs.etherscan.io/v2-migration)
+# Chain IDs для Etherscan API V2
 CHAIN_IDS = {
     "ethereum": 1,
     "bsc": 56,
@@ -45,8 +45,30 @@ USDT_CONTRACTS = {
     "avalanche": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
 }
 
+# Decimals для токенов (токен + сеть)
+TOKEN_DECIMALS = {
+    # USDT
+    "ethereum_usdt": 6,
+    "bsc_usdt": 18,
+    "polygon_usdt": 6,
+    "arbitrum_usdt": 6,
+    "optimism_usdt": 6,
+    
+    # USDC (добавим позже)
+    "ethereum_usdc": 6,
+    "bsc_usdc": 18,
+    "polygon_usdc": 6,
+}
+
+def get_token_decimals(chain, contract):
+    """Get decimals for token on specific chain"""
+    if "dAC17F958D2ee523a2206206994597C13D831ec7" in contract.lower():
+        key = f"{chain}_usdt"
+        return TOKEN_DECIMALS.get(key, 18)
+    return 18
+
 # ==========================================
-# 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ (ETHERSCAN API V2)
+# 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ
 # ==========================================
 def get_evm_balance(address, chain, contract=None):
     """Get balance using Etherscan API V2"""
@@ -57,7 +79,6 @@ def get_evm_balance(address, chain, contract=None):
     base_url = "https://api.etherscan.io/v2/api"
     
     if contract:
-        # Token balance (USDT)
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -72,13 +93,9 @@ def get_evm_balance(address, chain, contract=None):
         
         if data.get("status") == "1":
             raw_value = int(data["result"])
-            # USDT на Ethereum имеет 6 decimals
-            if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
-                return raw_value / 10**6
-            else:
-                return raw_value / 10**18
+            decimals = get_token_decimals(chain, contract)
+            return raw_value / (10 ** decimals)
     else:
-        # Native coin balance (ETH, BNB, etc.)
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -94,6 +111,7 @@ def get_evm_balance(address, chain, contract=None):
             return int(data["result"]) / 10**18
     
     return 0
+
 def get_evm_transactions(address, chain, days=30, contract=None):
     """Get transactions using Etherscan API V2"""
     chain_id = CHAIN_IDS.get(chain)
@@ -142,11 +160,8 @@ def get_evm_transactions(address, chain, days=30, contract=None):
     for tx in txs:
         if contract:
             value = int(tx["value"])
-            # USDT на Ethereum имеет 6 decimals
-            if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
-                value = value / 10**6
-            else:
-                value = value / 10**18
+            decimals = get_token_decimals(chain, contract)
+            value = value / (10 ** decimals)
         else:
             value = int(tx["value"]) / 10**18
         
@@ -156,6 +171,7 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             outgoing += value
     
     return txs, incoming, outgoing
+
 # ==========================================
 # 4. ФУНКЦИИ ДЛЯ BITCOIN
 # ==========================================
@@ -194,9 +210,11 @@ def get_btc_transactions(address, days=30):
 # ==========================================
 # 5. ФУНКЦИИ ДЛЯ SOLANA
 # ==========================================
+SOLSCAN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"
+
 def get_sol_balance(address):
     try:
-        headers = {"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"}
+        headers = {"token": SOLSCAN_TOKEN}
         resp = requests.get(f"https://public-api.solscan.io/account/{address}", headers=headers)
         data = resp.json()
         return data.get("lamports", 0) / 10**9
@@ -205,7 +223,7 @@ def get_sol_balance(address):
 
 def get_sol_transactions(address, days=30):
     try:
-        headers = {"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"}
+        headers = {"token": SOLSCAN_TOKEN}
         resp = requests.get(f"https://public-api.solscan.io/account/transactions?account={address}&limit=100", headers=headers)
         data = resp.json()
         
@@ -316,7 +334,7 @@ def analyze():
         if coin == "USDT":
             contract = USDT_CONTRACTS.get(network)
             if not contract:
-                return jsonify({'error': 'Network not supported for USDT'}), 400
+                return jsonify({'error': f'Network {network} not supported for USDT'}), 400
             balance = get_evm_balance(address, network, contract)
             txs, incoming, outgoing = get_evm_transactions(address, network, days, contract)
         else:
@@ -368,5 +386,5 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 
-print("Bot started on Etherscan API V2...")
+print("Bot started with all networks and correct decimals!")
 app.run_polling()
