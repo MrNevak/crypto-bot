@@ -101,45 +101,27 @@ function startAnimation(chart, targetData, startData, duration) {
 
 // Screen navigation
 function showWelcome() {
-    const welcome = document.getElementById('welcomeScreen');
-    const options = document.getElementById('optionsScreen');
-    const coin = document.getElementById('coinScreen');
-    const network = document.getElementById('networkScreen');
-    const main = document.getElementById('mainScreen');
-    
-    if (welcome) welcome.style.display = 'flex';
-    if (options) options.style.display = 'none';
-    if (coin) coin.style.display = 'none';
-    if (network) network.style.display = 'none';
-    if (main) main.style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'flex';
+    document.getElementById('optionsScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showOptionsScreen() {
-    const welcome = document.getElementById('welcomeScreen');
-    const options = document.getElementById('optionsScreen');
-    const coin = document.getElementById('coinScreen');
-    const network = document.getElementById('networkScreen');
-    const main = document.getElementById('mainScreen');
-    
-    if (welcome) welcome.style.display = 'none';
-    if (options) options.style.display = 'block';
-    if (coin) coin.style.display = 'none';
-    if (network) network.style.display = 'none';
-    if (main) main.style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'block';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showCoinScreen() {
-    const welcome = document.getElementById('welcomeScreen');
-    const options = document.getElementById('optionsScreen');
-    const coin = document.getElementById('coinScreen');
-    const network = document.getElementById('networkScreen');
-    const main = document.getElementById('mainScreen');
-    
-    if (welcome) welcome.style.display = 'none';
-    if (options) options.style.display = 'none';
-    if (coin) coin.style.display = 'block';
-    if (network) network.style.display = 'none';
-    if (main) main.style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'block';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showNetworkScreen(coin) {
@@ -154,7 +136,6 @@ function showNetworkScreen(coin) {
         const div = document.createElement('div');
         div.className = 'network-card';
         
-        // Use image icon for all networks
         const iconHtml = `<img src="${net.icon}" class="network-icon-img" alt="${net.name}" onerror="this.src='https://placehold.co/32x32?text=${net.icon.charAt(0)}'">`;
         
         div.innerHTML = `
@@ -171,17 +152,11 @@ function showNetworkScreen(coin) {
         networksList.appendChild(div);
     });
     
-    const welcome = document.getElementById('welcomeScreen');
-    const options = document.getElementById('optionsScreen');
-    const coinScreen = document.getElementById('coinScreen');
-    const networkScreen = document.getElementById('networkScreen');
-    const main = document.getElementById('mainScreen');
-    
-    if (welcome) welcome.style.display = 'none';
-    if (options) options.style.display = 'none';
-    if (coinScreen) coinScreen.style.display = 'none';
-    if (networkScreen) networkScreen.style.display = 'block';
-    if (main) main.style.display = 'none';
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'block';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showMainScreen() {
@@ -189,17 +164,11 @@ function showMainScreen() {
     document.getElementById('analysisSubtitle').textContent = `Network: ${selectedNetwork.toUpperCase()}`;
     document.getElementById('walletAddress').placeholder = getPlaceholder();
     
-    const welcome = document.getElementById('welcomeScreen');
-    const options = document.getElementById('optionsScreen');
-    const coin = document.getElementById('coinScreen');
-    const network = document.getElementById('networkScreen');
-    const main = document.getElementById('mainScreen');
-    
-    if (welcome) welcome.style.display = 'none';
-    if (options) options.style.display = 'none';
-    if (coin) coin.style.display = 'none';
-    if (network) network.style.display = 'none';
-    if (main) main.style.display = 'block';
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
     
     document.getElementById('walletAddress').value = '';
     document.getElementById('results').style.display = 'none';
@@ -293,6 +262,15 @@ document.getElementById('backBtn').onclick = () => {
 
 function displayResults(data) {
     document.getElementById('balance').textContent = `${data.balance} ${selectedCoin}`;
+    
+    const balanceUsdElement = document.getElementById('balanceUsd');
+    if (balanceUsdElement && data.balanceUsd !== undefined && data.balanceUsd > 0) {
+        balanceUsdElement.textContent = `≈ $${data.balanceUsd} USD`;
+        balanceUsdElement.style.display = 'block';
+    } else if (balanceUsdElement) {
+        balanceUsdElement.style.display = 'none';
+    }
+    
     document.getElementById('txCount').textContent = data.txCount;
     document.getElementById('incoming').textContent = `${data.incoming} ${selectedCoin}`;
     document.getElementById('outgoing').textContent = `${data.outgoing} ${selectedCoin}`;
