@@ -529,6 +529,13 @@ body {
     color: transparent;
 }
 
+.value-usd {
+    display: block;
+    font-size: 14px;
+    color: #888;
+    margin-top: 4px;
+}
+
 /* Убираем окантовку с input */
 #walletAddress {
     padding: 14px;
