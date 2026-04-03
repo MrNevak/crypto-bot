@@ -62,7 +62,6 @@ document.getElementById('closeModalBtn').addEventListener('click', () => {
     document.getElementById('chartModal').classList.add('hidden');
 });
 
-// Закрытие по клику вне окна
 document.getElementById('chartModal').addEventListener('click', (e) => {
     if (e.target === document.getElementById('chartModal')) {
         document.getElementById('chartModal').classList.add('hidden');
@@ -113,7 +112,8 @@ function showChartModal(dailyData) {
     }
     
     const labels = dailyData.map(d => d.date.slice(5));
-    const counts = dailyData.map(d => d.count);
+    const realCounts = dailyData.map(d => d.count);
+    const zeroCounts = new Array(realCounts.length).fill(0);
     
     if (chart) {
         chart.destroy();
@@ -125,7 +125,7 @@ function showChartModal(dailyData) {
             labels: labels,
             datasets: [{
                 label: 'Transactions per day',
-                data: counts,
+                data: zeroCounts,
                 borderColor: '#3390ec',
                 backgroundColor: 'rgba(51, 144, 236, 0.1)',
                 borderWidth: 2,
@@ -142,8 +142,7 @@ function showChartModal(dailyData) {
             responsive: true,
             maintainAspectRatio: true,
             animation: {
-                duration: 3000,
-                easing: 'easeOutQuart'
+                duration: 0
             },
             plugins: {
                 legend: {
@@ -175,4 +174,12 @@ function showChartModal(dailyData) {
     });
     
     document.getElementById('chartModal').classList.remove('hidden');
+    
+    setTimeout(() => {
+        chart.data.datasets[0].data = realCounts;
+        chart.update({
+            duration: 3000,
+            easing: 'easeOutQuart'
+        });
+    }, 100);
 }
