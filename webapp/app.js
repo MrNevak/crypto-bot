@@ -64,17 +64,29 @@ function startAnimation(chart, targetData, startData, duration) {
 }
 
 // Переключение экранов
+function showWelcomeScreen() {
+    document.getElementById('welcomeScreen').classList.remove('hidden');
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.add('hidden');
+}
+
 function showStartScreen() {
+    document.getElementById('welcomeScreen').classList.add('hidden');
     document.getElementById('startScreen').classList.remove('hidden');
     document.getElementById('mainScreen').classList.add('hidden');
 }
 
 function showMainScreen() {
+    document.getElementById('welcomeScreen').classList.add('hidden');
     document.getElementById('startScreen').classList.add('hidden');
     document.getElementById('mainScreen').classList.remove('hidden');
 }
 
-// Обработчики карточек
+// Обработчики
+document.getElementById('startWorkBtn').addEventListener('click', () => {
+    showStartScreen();
+});
+
 document.getElementById('analyzeCard').addEventListener('click', () => {
     showMainScreen();
 });
@@ -289,4 +301,5 @@ function showChartModal(dailyData) {
     }, 100);
 }
 
-showStartScreen();
+// Показываем приветственный экран
+showWelcomeScreen();
