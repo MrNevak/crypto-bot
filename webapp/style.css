@@ -24,7 +24,10 @@ body {
 .header h1 {
     font-size: 24px;
     margin-bottom: 4px;
-    color: #ffffff;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .subtitle {
@@ -49,25 +52,24 @@ body {
 .token-btn, .period-btn {
     flex: 1;
     padding: 12px;
-    border: 2px solid #f5a623;
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    background: #1a1a1a;
     color: #ffffff;
     transition: all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .token-btn.active, .period-btn.active {
-    background: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
     color: #0a0a0a;
-    box-shadow: 0 0 15px rgba(245, 166, 35, 0.6);
+    box-shadow: 0 0 15px rgba(212, 196, 168, 0.3);
 }
 
 .token-icon {
@@ -89,18 +91,17 @@ body {
 
 #walletAddress {
     padding: 14px;
-    border: 2px solid #f5a623;
+    border: 1px solid transparent;
+    background: linear-gradient(#0a0a0a, #0a0a0a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
     border-radius: 12px;
     font-size: 14px;
-    background: #0a0a0a;
     color: #ffffff;
     font-family: monospace;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 #walletAddress:focus {
     outline: none;
-    box-shadow: 0 0 15px rgba(245, 166, 35, 0.5);
+    box-shadow: 0 0 15px rgba(212, 196, 168, 0.3);
 }
 
 #walletAddress::placeholder {
@@ -111,28 +112,29 @@ body {
     padding: 14px;
     background: #1a1a1a;
     color: #ffffff;
-    border: 2px solid #f5a623;
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .analyze-btn:hover {
-    background: #2a2a2a;
-    box-shadow: 0 0 15px rgba(245, 166, 35, 0.5);
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    color: #0a0a0a;
+    box-shadow: 0 0 15px rgba(212, 196, 168, 0.3);
 }
 
 #showChartBtn {
     background: #1a1a1a;
     color: #ffffff;
-    border: 2px solid #f5a623;
 }
 
 #showChartBtn:hover {
-    background: #2a2a2a;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    color: #0a0a0a;
 }
 
 .loading {
@@ -144,7 +146,7 @@ body {
     width: 40px;
     height: 40px;
     border: 3px solid #2a2a2a;
-    border-top-color: #f5a623;
+    border-top-color: #D4C4A8;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin: 0 auto 16px;
@@ -169,8 +171,9 @@ body {
     padding: 20px;
     text-align: center;
     margin-bottom: 20px;
-    border: 2px solid #f5a623;
-    box-shadow: 0 0 10px rgba(245, 166, 35, 0.3);
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #0a0a0a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    box-shadow: 0 0 10px rgba(212, 196, 168, 0.1);
 }
 
 .balance-card .label {
@@ -185,7 +188,10 @@ body {
     font-size: 28px;
     font-weight: bold;
     font-family: monospace;
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .stats-grid {
@@ -200,8 +206,8 @@ body {
     border-radius: 12px;
     padding: 16px;
     text-align: center;
-    border: 2px solid #f5a623;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
 }
 
 .stat-label {
@@ -217,11 +223,17 @@ body {
 }
 
 .stat-value.positive {
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .stat-value.negative {
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .insight-card {
@@ -232,8 +244,8 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
-    border: 2px solid #f5a623;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
 }
 
 .insight-icon {
@@ -251,14 +263,17 @@ body {
     background: #1a1a1a;
     border-radius: 12px;
     padding: 16px;
-    border: 2px solid #f5a623;
-    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
 }
 
 .top-card h3 {
     font-size: 14px;
     margin-bottom: 12px;
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .top-list {
@@ -307,7 +322,10 @@ body {
 }
 
 .back-text {
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-size: 18px;
     font-weight: 600;
     cursor: pointer;
@@ -326,7 +344,10 @@ body {
 .modal-title {
     flex: 1;
     text-align: center;
-    color: #f5a623;
+    background: linear-gradient(135deg, #D4C4A8, #F0E1B9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-size: 18px;
     font-weight: 600;
     margin-right: 50px;
@@ -346,8 +367,9 @@ body {
     padding: 20px;
     width: 100%;
     height: auto;
-    border: 2px solid #f5a623;
-    box-shadow: 0 0 15px rgba(245, 166, 35, 0.3);
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    box-shadow: 0 0 15px rgba(212, 196, 168, 0.1);
 }
 
 .modal-body canvas {
