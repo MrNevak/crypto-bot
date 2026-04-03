@@ -196,33 +196,54 @@ SOLSCAN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2Mj
 
 def get_sol_balance(address):
     try:
-        headers = {"token": SOLSCAN_TOKEN}
-        resp = requests.get(f"https://public-api.solscan.io/account/{address}", headers=headers)
+        # Используем Solana RPC вместо Solscan API
+        url = "https://api.mainnet-beta.solana.com"
+        headers = {"Content-Type": "application/json"}
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "getBalance",
+            "params": [address]
+        }
+        resp = requests.post(url, json=payload, headers=headers)
         data = resp.json()
-        lamports = data.get("lamports", 0)
-        if lamports == 0:
-            lamports = data.get("balance", 0)
-        return lamports / 1_000_000_000
-    except:
+        if "result" in data:
+            return data["result"]["value"] / 10**9
+        return 0
+    except Exception as e:
+        print(f"Solana balance error: {e}")
         return 0
 
 def get_sol_transactions(address, days=30):
     try:
-        headers = {"token": SOLSCAN_TOKEN}
-        resp = requests.get(f"https://public-api.solscan.io/account/transactions?account={address}&limit=100", headers=headers)
+        # Получаем сигнатуры транзакций
+        url = "https://api.mainnet-beta.solana.com"
+        headers = {"Content-Type": "application/json"}
+        
+        # Сначала получаем список транзакций
+        payload = {
+            "jsonrpc": "2.0",
+            "id": 1,
+            "method": "getSignaturesForAddress",
+            "params": [address, {"limit": 100}]
+        }
+        resp = requests.post(url, json=payload, headers=headers)
         data = resp.json()
+        
+        if "result" not in data:
+            return [], 0, 0
+        
         cutoff = int(time.time()) - days * 86400
-        txs = [tx for tx in data if tx.get("blockTime", 0) >= cutoff]
-        incoming = 0
-        outgoing = 0
-        for tx in txs:
-            for detail in tx.get("tokenTransfers", []):
-                if detail.get("toAddress") == address:
-                    incoming += detail.get("tokenAmount", 0) / 10**9
-                if detail.get("fromAddress") == address:
-                    outgoing += detail.get("tokenAmount", 0) / 10**9
-        return txs, incoming, outgoing
-    except:
+        txs = []
+        for sig in data["result"]:
+            if sig.get("blockTime", 0) >= cutoff:
+                txs.append(sig)
+        
+        # Solana сложно посчитать incoming/outgoing через RPC
+        # Пока возвращаем только количество
+        return txs, 0, 0
+    except Exception as e:
+        print(f"Solana transactions error: {e}")
         return [], 0, 0
 
 # ==========================================
