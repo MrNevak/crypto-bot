@@ -190,23 +190,48 @@ def analyze():
     insight = generate_insights(incoming, outgoing)
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
     
-    # Подсчёт транзакций по дням для графика
-    now_ts = int(time.time())
-    cutoff = now_ts - days * 86400
+    # Подсчёт транзакций - 7 дней = 7 точек, 30 дней = 4 недели
+    from collections import defaultdict
     
-    daily = defaultdict(int)
-    for i in range(days + 1):
-        day_date = datetime.fromtimestamp(cutoff + i * 86400).strftime('%Y-%m-%d')
-        daily[day_date] = 0
+    if days == 7:
+        # 7 дней - 7 точек
+        daily = defaultdict(int)
+        now_ts = int(time.time())
+        for i in range(7):
+            day_date = datetime.fromtimestamp(now_ts - i * 86400).strftime('%Y-%m-%d')
+            daily[day_date] = 0
+        
+        for tx in txs:
+            ts = int(tx.get('timeStamp', 0))
+            if ts:
+                tx_date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+                if tx_date in daily:
+                    daily[tx_date] += 1
+        
+        daily_data = [{'date': d, 'count': daily[d]} for d in sorted(daily.keys())]
     
-    for tx in txs:
-        ts = int(tx.get('timeStamp', 0))
-        if ts:
-            tx_date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
-            if tx_date in daily:
-                daily[tx_date] += 1
-    
-    daily_data = [{'date': d, 'count': daily[d]} for d in sorted(daily.keys())]
+    else:  # 30 дней - группируем по неделям
+        weekly = defaultdict(int)
+        now_ts = int(time.time())
+        
+        # Создаём 4 недели
+        for week in range(4):
+            week_start = now_ts - (week + 1) * 7 * 86400
+            week_end = now_ts - week * 7 * 86400
+            week_label = f"Week {4 - week}"
+            weekly[week_label] = 0
+        
+        for tx in txs:
+            ts = int(tx.get('timeStamp', 0))
+            if ts:
+                for week in range(4):
+                    week_start = now_ts - (week + 1) * 7 * 86400
+                    week_end = now_ts - week * 7 * 86400
+                    if week_start <= ts < week_end:
+                        weekly[f"Week {4 - week}"] += 1
+                        break
+        
+        daily_data = [{'date': k, 'count': v} for k, v in sorted(weekly.items())]
     
     return jsonify({
         'balance': round(balance, 6),
