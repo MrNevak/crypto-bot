@@ -23,10 +23,17 @@ logging.basicConfig(level=logging.INFO)
 
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
 ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
-BSCSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
-POLYGONSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
-ARBISCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
-OPTIMISMSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
+
+# Chain IDs для Etherscan API V2 (https://docs.etherscan.io/v2-migration)
+CHAIN_IDS = {
+    "ethereum": 1,
+    "bsc": 56,
+    "polygon": 137,
+    "arbitrum": 42161,
+    "optimism": 10,
+    "avalanche": 43114,
+    "base": 8453
+}
 
 # Контракты USDT по сетям
 USDT_CONTRACTS = {
@@ -34,41 +41,33 @@ USDT_CONTRACTS = {
     "bsc": "0x55d398326f99059fF775485246999027B3197955",
     "polygon": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
     "arbitrum": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-    "optimism": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58"
+    "optimism": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+    "avalanche": "0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7"
 }
 
 # ==========================================
-# 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ
+# 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ (ETHERSCAN API V2)
 # ==========================================
-# ==========================================
-# ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ USDT НА ETHEREUM
-# ==========================================
-
 def get_evm_balance(address, chain, contract=None):
-    """Get balance for EVM chains"""
-    explorers = {
-        "ethereum": {"url": "https://api.etherscan.io/api", "api_key": ETHERSCAN_API_KEY},
-        "bsc": {"url": "https://api.bscscan.com/api", "api_key": BSCSCAN_API_KEY},
-        "polygon": {"url": "https://api.polygonscan.com/api", "api_key": POLYGONSCAN_API_KEY},
-        "arbitrum": {"url": "https://api.arbiscan.io/api", "api_key": ARBISCAN_API_KEY},
-        "optimism": {"url": "https://api-optimistic.etherscan.io/api", "api_key": OPTIMISMSCAN_API_KEY}
-    }
-    
-    explorer = explorers.get(chain)
-    if not explorer:
+    """Get balance using Etherscan API V2"""
+    chain_id = CHAIN_IDS.get(chain)
+    if not chain_id:
         return 0
     
+    base_url = "https://api.etherscan.io/v2/api"
+    
     if contract:
-        # Token balance
+        # Токен (USDT)
         params = {
+            "chainid": chain_id,
             "module": "account",
             "action": "tokenbalance",
             "contractaddress": contract,
             "address": address,
             "tag": "latest",
-            "apikey": explorer["api_key"]
+            "apikey": ETHERSCAN_API_KEY
         }
-        resp = requests.get(explorer["url"], params=params)
+        resp = requests.get(base_url, params=params)
         data = resp.json()
         
         if data.get("status") == "1":
@@ -78,15 +77,16 @@ def get_evm_balance(address, chain, contract=None):
             else:
                 return int(data["result"]) / 10**18
     else:
-        # Native coin balance
+        # Нативная монета (ETH, BNB, MATIC и т.д.)
         params = {
+            "chainid": chain_id,
             "module": "account",
             "action": "balance",
             "address": address,
             "tag": "latest",
-            "apikey": explorer["api_key"]
+            "apikey": ETHERSCAN_API_KEY
         }
-        resp = requests.get(explorer["url"], params=params)
+        resp = requests.get(base_url, params=params)
         data = resp.json()
         
         if data.get("status") == "1":
@@ -95,25 +95,19 @@ def get_evm_balance(address, chain, contract=None):
     return 0
 
 def get_evm_transactions(address, chain, days=30, contract=None):
-    """Get transactions for EVM chains"""
-    explorers = {
-        "ethereum": {"url": "https://api.etherscan.io/api", "api_key": ETHERSCAN_API_KEY},
-        "bsc": {"url": "https://api.bscscan.com/api", "api_key": BSCSCAN_API_KEY},
-        "polygon": {"url": "https://api.polygonscan.com/api", "api_key": POLYGONSCAN_API_KEY},
-        "arbitrum": {"url": "https://api.arbiscan.io/api", "api_key": ARBISCAN_API_KEY},
-        "optimism": {"url": "https://api-optimistic.etherscan.io/api", "api_key": OPTIMISMSCAN_API_KEY}
-    }
-    
-    explorer = explorers.get(chain)
-    if not explorer:
+    """Get transactions using Etherscan API V2"""
+    chain_id = CHAIN_IDS.get(chain)
+    if not chain_id:
         return [], 0, 0
     
+    base_url = "https://api.etherscan.io/v2/api"
     now = int(time.time())
     cutoff = now - days * 86400
     
     if contract:
-        # Token transactions
+        # Токен транзакции
         params = {
+            "chainid": chain_id,
             "module": "account",
             "action": "tokentx",
             "contractaddress": contract,
@@ -121,21 +115,22 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             "startblock": "0",
             "endblock": "99999999",
             "sort": "desc",
-            "apikey": explorer["api_key"]
+            "apikey": ETHERSCAN_API_KEY
         }
     else:
-        # Native transactions
+        # Нативные транзакции
         params = {
+            "chainid": chain_id,
             "module": "account",
             "action": "txlist",
             "address": address,
             "startblock": "0",
             "endblock": "99999999",
             "sort": "desc",
-            "apikey": explorer["api_key"]
+            "apikey": ETHERSCAN_API_KEY
         }
     
-    resp = requests.get(explorer["url"], params=params)
+    resp = requests.get(base_url, params=params)
     data = resp.json()
     
     if data.get("status") != "1":
@@ -148,13 +143,13 @@ def get_evm_transactions(address, chain, days=30, contract=None):
     
     for tx in txs:
         if contract:
-            # Token transaction
+            # Токен транзакция
             value = int(tx["value"]) / 10**18
             # USDT имеет 6 decimals
             if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
                 value = int(tx["value"]) / 10**6
         else:
-            # Native transaction
+            # Нативная транзакция
             value = int(tx["value"]) / 10**18
         
         if tx.get("to", "").lower() == address.lower():
@@ -163,11 +158,11 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             outgoing += value
     
     return txs, incoming, outgoing
+
 # ==========================================
 # 4. ФУНКЦИИ ДЛЯ BITCOIN
 # ==========================================
 def get_btc_balance(address):
-    """Get BTC balance from mempool.space"""
     try:
         resp = requests.get(f"https://mempool.space/api/address/{address}")
         data = resp.json()
@@ -176,7 +171,6 @@ def get_btc_balance(address):
         return 0
 
 def get_btc_transactions(address, days=30):
-    """Get BTC transactions"""
     try:
         resp = requests.get(f"https://mempool.space/api/address/{address}/txs")
         data = resp.json()
@@ -204,7 +198,6 @@ def get_btc_transactions(address, days=30):
 # 5. ФУНКЦИИ ДЛЯ SOLANA
 # ==========================================
 def get_sol_balance(address):
-    """Get SOL balance from Solscan"""
     try:
         headers = {"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"}
         resp = requests.get(f"https://public-api.solscan.io/account/{address}", headers=headers)
@@ -214,7 +207,6 @@ def get_sol_balance(address):
         return 0
 
 def get_sol_transactions(address, days=30):
-    """Get SOL transactions"""
     try:
         headers = {"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"}
         resp = requests.get(f"https://public-api.solscan.io/account/transactions?account={address}&limit=100", headers=headers)
@@ -264,9 +256,7 @@ def analyze():
     if coin == "BTC":
         balance = get_btc_balance(address)
         txs, incoming, outgoing = get_btc_transactions(address, days)
-        decimals = 8
         
-        # Daily data for chart
         daily = defaultdict(int)
         now_ts = int(time.time())
         for i in range(days):
@@ -297,7 +287,6 @@ def analyze():
     if coin == "SOL":
         balance = get_sol_balance(address)
         txs, incoming, outgoing = get_sol_transactions(address, days)
-        decimals = 9
         
         daily = defaultdict(int)
         now_ts = int(time.time())
@@ -337,7 +326,6 @@ def analyze():
             balance = get_evm_balance(address, network)
             txs, incoming, outgoing = get_evm_transactions(address, network, days)
         
-        # Daily data
         daily = defaultdict(int)
         now_ts = int(time.time())
         for i in range(days):
@@ -383,5 +371,5 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 
-print("Bot started...")
+print("Bot started on Etherscan API V2...")
 app.run_polling()
