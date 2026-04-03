@@ -290,32 +290,36 @@ body {
 
 .modal-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    padding: 16px 20px;
-    background: #1a1a1a;
-    border-bottom: 1px solid #f5a623;
+    padding: 20px 20px 10px 20px;
+    background: transparent;
 }
 
-.modal-header h3 {
-    margin: 0;
+.back-text {
     color: #f5a623;
     font-size: 18px;
-}
-
-.back-btn {
-    background: #f5a623;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    color: #0a0a0a;
+    transition: opacity 0.2s;
+    text-decoration: none;
 }
 
-.back-btn:hover {
-    background: #f7931a;
+.back-text:hover {
+    opacity: 0.6;
+}
+
+.back-text:active {
+    opacity: 0.3;
+}
+
+.modal-title {
+    flex: 1;
+    text-align: center;
+    color: #f5a623;
+    font-size: 18px;
+    font-weight: 600;
+    margin-right: 50px;
 }
 
 .modal-body {
@@ -326,9 +330,20 @@ body {
     justify-content: center;
 }
 
-.modal-body canvas {
+.chart-wrapper {
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    border-radius: 24px;
+    padding: 20px;
     width: 100%;
-    max-height: 80vh;
+    height: auto;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(245, 166, 35, 0.2);
+}
+
+.modal-body canvas {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 60vh;
 }
 
 .hidden {
