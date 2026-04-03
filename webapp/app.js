@@ -290,6 +290,9 @@ function showChartModal(dailyData) {
     const targetData = dailyData.map(d => d.count);
     const startData = new Array(targetData.length).fill(0);
     
+    // Находим максимальное значение для фиксации оси Y
+    const maxValue = Math.max(...targetData, 1); // минимум 1, чтобы ось не схлопнулась
+    
     if (chart) {
         chart.destroy();
         chart = null;
@@ -329,11 +332,28 @@ function showChartModal(dailyData) {
                 }
             },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(212, 196, 168, 0.1)' }, ticks: { color: '#aaa' } },
-                x: { grid: { display: false }, ticks: { color: '#aaa', maxRotation: 45, autoSkip: true } }
+                y: { 
+                    beginAtZero: true,
+                    max: maxValue,  // ФИКСИРУЕМ МАКСИМУМ
+                    grid: { color: 'rgba(212, 196, 168, 0.1)' }, 
+                    ticks: { color: '#aaa', stepSize: Math.ceil(maxValue / 5) || 1 }
+                },
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { color: '#aaa', maxRotation: 45, autoSkip: true } 
+                }
             }
         }
     });
+    
+    document.getElementById('chartModal').style.display = 'flex';
+    
+    setTimeout(() => {
+        if (chart && !isAnimating) {
+            startAnimation(chart, targetData, startData, animationDuration);
+        }
+    }, 100);
+}
     
     document.getElementById('chartModal').style.display = 'flex';
     
