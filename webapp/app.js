@@ -6,9 +6,8 @@ let selectedDays = 7;
 let chart = null;
 let currentDailyData = null;
 let animationFrame = null;
-let animationStartTime = null;
-let animationDuration = 4000;
 let isAnimating = false;
+let animationDuration = 4000;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
@@ -44,7 +43,8 @@ function animateChart(chart, targetData, startData, duration, startTime) {
     } else {
         chart.data.datasets[0].data = targetData;
         chart.update('none');
-        stopAnimation();
+        isAnimating = false;
+        animationFrame = null;
     }
 }
 
@@ -54,14 +54,13 @@ function stopAnimation() {
         animationFrame = null;
     }
     isAnimating = false;
-    animationStartTime = null;
 }
 
 function startAnimation(chart, targetData, startData, duration) {
     stopAnimation();
     isAnimating = true;
-    animationStartTime = performance.now();
-    animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, animationStartTime));
+    const startTime = performance.now();
+    animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, startTime));
 }
 
 // Переключение экранов
@@ -86,7 +85,6 @@ document.getElementById('portfolioCard').addEventListener('click', () => {
 
 document.getElementById('backToStart').addEventListener('click', () => {
     showStartScreen();
-    // Сброс формы
     document.getElementById('walletAddress').value = '';
     document.getElementById('results').classList.add('hidden');
     document.getElementById('showChartBtn').classList.add('hidden');
@@ -288,8 +286,7 @@ function showChartModal(dailyData) {
         if (chart && !isAnimating) {
             startAnimation(chart, targetData, startData, animationDuration);
         }
-    }, 50);
+    }, 100);
 }
 
-// Показываем стартовый экран при загрузке
 showStartScreen();
