@@ -57,7 +57,7 @@ def get_evm_balance(address, chain, contract=None):
     base_url = "https://api.etherscan.io/v2/api"
     
     if contract:
-        # Токен (USDT)
+        # Token balance (USDT)
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -71,13 +71,14 @@ def get_evm_balance(address, chain, contract=None):
         data = resp.json()
         
         if data.get("status") == "1":
-            # USDT имеет 6 decimals, остальные токены 18
+            raw_value = int(data["result"])
+            # USDT на Ethereum имеет 6 decimals
             if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
-                return int(data["result"]) / 10**6
+                return raw_value / 10**6
             else:
-                return int(data["result"]) / 10**18
+                return raw_value / 10**18
     else:
-        # Нативная монета (ETH, BNB, MATIC и т.д.)
+        # Native coin balance (ETH, BNB, etc.)
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -93,7 +94,6 @@ def get_evm_balance(address, chain, contract=None):
             return int(data["result"]) / 10**18
     
     return 0
-
 def get_evm_transactions(address, chain, days=30, contract=None):
     """Get transactions using Etherscan API V2"""
     chain_id = CHAIN_IDS.get(chain)
@@ -105,7 +105,6 @@ def get_evm_transactions(address, chain, days=30, contract=None):
     cutoff = now - days * 86400
     
     if contract:
-        # Токен транзакции
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -118,7 +117,6 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             "apikey": ETHERSCAN_API_KEY
         }
     else:
-        # Нативные транзакции
         params = {
             "chainid": chain_id,
             "module": "account",
@@ -143,13 +141,13 @@ def get_evm_transactions(address, chain, days=30, contract=None):
     
     for tx in txs:
         if contract:
-            # Токен транзакция
-            value = int(tx["value"]) / 10**18
-            # USDT имеет 6 decimals
+            value = int(tx["value"])
+            # USDT на Ethereum имеет 6 decimals
             if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
-                value = int(tx["value"]) / 10**6
+                value = value / 10**6
+            else:
+                value = value / 10**18
         else:
-            # Нативная транзакция
             value = int(tx["value"]) / 10**18
         
         if tx.get("to", "").lower() == address.lower():
@@ -158,7 +156,6 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             outgoing += value
     
     return txs, incoming, outgoing
-
 # ==========================================
 # 4. ФУНКЦИИ ДЛЯ BITCOIN
 # ==========================================
