@@ -120,6 +120,15 @@ body {
     background: #f7931a;
 }
 
+#showChartBtn {
+    background: #2a2a2a;
+    color: #ffffff;
+}
+
+#showChartBtn:hover {
+    background: #3a3a3a;
+}
+
 .loading {
     text-align: center;
     padding: 40px;
@@ -258,38 +267,25 @@ body {
     padding: 16px;
 }
 
-/* Модальное окно */
+/* Модальное окно - полноэкранное */
 .modal {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.95);
+    background: #0a0a0a;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
     z-index: 1000;
 }
 
 .modal-content {
-    background: #1a1a1a;
-    border-radius: 20px;
-    width: 90%;
-    max-width: 500px;
-    border: 1px solid #f5a623;
-    animation: modalFadeIn 0.3s ease;
-}
-
-@keyframes modalFadeIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    background: #0a0a0a;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 }
 
 .modal-header {
@@ -297,34 +293,42 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
+    background: #1a1a1a;
     border-bottom: 1px solid #f5a623;
 }
 
 .modal-header h3 {
     margin: 0;
     color: #f5a623;
+    font-size: 18px;
 }
 
-.close-btn {
-    background: none;
+.back-btn {
+    background: #f5a623;
     border: none;
-    font-size: 28px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    color: #888;
-    padding: 0;
-    line-height: 1;
+    color: #0a0a0a;
 }
 
-.close-btn:hover {
-    color: #f5a623;
+.back-btn:hover {
+    background: #f7931a;
 }
 
 .modal-body {
+    flex: 1;
     padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-body canvas {
-    max-height: 400px;
+    width: 100%;
+    max-height: 80vh;
 }
 
 .hidden {
