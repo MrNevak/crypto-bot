@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <!-- OPTIONS SCREEN (LAUNCHER) -->
+        <!-- OPTIONS SCREEN -->
         <div id="optionsScreen" class="hidden">
             <div class="header">
                 <h1 class="options-title">Options</h1>
@@ -140,6 +140,7 @@
                 <div class="balance-card">
                     <span class="label">Balance</span>
                     <span class="value" id="balance">—</span>
+                    <span class="value-usd" id="balanceUsd" style="display: none;"></span>
                 </div>
 
                 <div class="stats-grid">
@@ -153,53 +154,4 @@
                     </div>
                     <div class="stat-card">
                         <span class="stat-label">⬆️ Sent</span>
-                        <span class="stat-value negative" id="outgoing">—</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">⛽ Gas Fees</span>
-                        <span class="stat-value" id="gasFees">—</span>
-                    </div>
-                </div>
-
-                <div class="insight-card">
-                    <span class="insight-icon">💡</span>
-                    <span id="insight">—</span>
-                </div>
-
-                <div class="top-section">
-                    <div class="top-card">
-                        <h3>🏆 Top Senders</h3>
-                        <div id="topSenders" class="top-list">—</div>
-                    </div>
-                    <div class="top-card">
-                        <h3>🎯 Top Receivers</h3>
-                        <div id="topReceivers" class="top-list">—</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="footer">
-                <p>Data provided by Blockchain APIs</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL WINDOW FOR CHART -->
-    <div id="chartModal" class="modal hidden">
-        <div class="modal-content">
-            <div class="modal-header">
-                <span id="backBtn" class="back-text">← Back</span>
-                <span class="modal-title">Transaction History</span>
-            </div>
-            <div class="modal-body">
-                <div class="chart-wrapper">
-                    <canvas id="txChartModal"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
-</body>
-</html>
+                        <span class="stat-value negative" id="out
