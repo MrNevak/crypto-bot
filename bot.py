@@ -5,7 +5,8 @@ import requests
 import time
 import datetime
 import io
-from collections import Counter
+from collections import Counter, defaultdict
+from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 import json
 import logging
@@ -104,7 +105,6 @@ def get_token_balance(address, contract=USDT_CONTRACT):
     return int(data["result"]) / 10**6
 
 def get_eth_transactions_analysis(address, days):
-    """Receives and analyzes ETH transactions for a specified period..."""
     txs = get_recent_transactions(address, days)
     incoming = 0
     outgoing = 0
@@ -117,7 +117,6 @@ def get_eth_transactions_analysis(address, days):
     return incoming, outgoing, len(txs), txs
 
 def get_usdt_transactions_analysis(address, days):
-    """Receives and analyzes USDT transactions for a specified period..."""
     txs = get_token_transactions(address, USDT_CONTRACT, days)
     incoming = 0
     outgoing = 0
@@ -153,7 +152,7 @@ def top_addresses(txs, address, n=3, decimals=18):
     return incoming.most_common(n), outgoing.most_common(n)
 
 # ==========================================
-# 4. TELEGRAM БОТ (ТОЛЬКО КНОПКА)
+# 4. TELEGRAM БОТ
 # ==========================================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [[InlineKeyboardButton("🚀 Открыть приложение", web_app=WebAppInfo(url="https://crypto-bot-production-d6b8.up.railway.app"))]]
@@ -191,6 +190,24 @@ def analyze():
     insight = generate_insights(incoming, outgoing)
     top_in, top_out = top_addresses(txs, address, decimals=decimals)
     
+    # Подсчёт транзакций по дням для графика
+    now_ts = int(time.time())
+    cutoff = now_ts - days * 86400
+    
+    daily = defaultdict(int)
+    for i in range(days + 1):
+        day_date = datetime.fromtimestamp(cutoff + i * 86400).strftime('%Y-%m-%d')
+        daily[day_date] = 0
+    
+    for tx in txs:
+        ts = int(tx.get('timeStamp', 0))
+        if ts:
+            tx_date = datetime.fromtimestamp(ts).strftime('%Y-%m-%d')
+            if tx_date in daily:
+                daily[tx_date] += 1
+    
+    daily_data = [{'date': d, 'count': daily[d]} for d in sorted(daily.keys())]
+    
     return jsonify({
         'balance': round(balance, 6),
         'txCount': count,
@@ -198,7 +215,8 @@ def analyze():
         'outgoing': round(outgoing, 6),
         'insight': insight,
         'topSenders': [[addr, val] for addr, val in top_in],
-        'topReceivers': [[addr, val] for addr, val in top_out]
+        'topReceivers': [[addr, val] for addr, val in top_out],
+        'dailyData': daily_data
     })
 
 def run_flask():
