@@ -14,100 +14,44 @@ logging.basicConfig(level=logging.INFO)
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
 ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
 
-CHAIN_IDS = {
-    "ethereum": 1,
-    "bsc": 56,
-    "polygon": 137,
-    "arbitrum": 42161,
-    "optimism": 10,
-}
+USDT_CONTRACT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
-USDT_CONTRACTS = {
-    "ethereum": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    "bsc": "0x55d398326f99059fF775485246999027B3197955",
-    "polygon": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-    "arbitrum": "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9",
-    "optimism": "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
-}
+# Цены монет в USD (кэш на 5 минут)
+price_cache = {}
+price_cache_time = {}
 
-# ==========================================
-# PRICE API
-# ==========================================
-def get_usd_price(symbol):
-    """Get price in USD for any coin"""
+def get_usd_price(coin):
+    """Получить цену монеты в USD с CoinGecko"""
+    coin_ids = {
+        "BTC": "bitcoin",
+        "ETH": "ethereum",
+        "USDT": "tether",
+        "BNB": "binancecoin",
+        "SOL": "solana",
+        "TON": "the-open-network"
+    }
+    
+    coin_id = coin_ids.get(coin)
+    if not coin_id:
+        return 0
+    
+    # Проверяем кэш (5 минут)
+    if coin_id in price_cache_time and time.time() - price_cache_time[coin_id] < 300:
+        return price_cache.get(coin_id, 0)
+    
     try:
-        ids = {
-            "BTC": "bitcoin",
-            "ETH": "ethereum",
-            "USDT": "tether",
-            "BNB": "binancecoin",
-            "SOL": "solana",
-            "TON": "the-open-network"
-        }
-        coin_id = ids.get(symbol, symbol.lower())
-        resp = requests.get(f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd")
+        url = f"https://api.coingecko.com/api/v3/simple/price?ids={coin_id}&vs_currencies=usd"
+        resp = requests.get(url)
         data = resp.json()
-        return data.get(coin_id, {}).get("usd", 0)
+        price = data.get(coin_id, {}).get("usd", 0)
+        price_cache[coin_id] = price
+        price_cache_time[coin_id] = time.time()
+        return price
     except:
         return 0
 
 # ==========================================
-# ETHEREUM USDT BALANCE
-# ==========================================
-def get_usdt_ethereum_balance(address):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "tokenbalance",
-        "contractaddress": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "address": address,
-        "tag": "latest",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
-    data = resp.json()
-    
-    if data.get("status") == "1":
-        return int(data["result"]) / 10**6
-    return 0
-
-def get_usdt_ethereum_transactions(address, days=30):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "tokentx",
-        "contractaddress": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        "address": address,
-        "startblock": "0",
-        "endblock": "99999999",
-        "sort": "desc",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
-    data = resp.json()
-    
-    if data.get("status") != "1":
-        return [], 0, 0
-    
-    cutoff = int(time.time()) - days * 86400
-    txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
-    
-    incoming = 0
-    outgoing = 0
-    
-    for tx in txs:
-        value = int(tx["value"]) / 10**6
-        if tx.get("to", "").lower() == address.lower():
-            incoming += value
-        elif tx.get("from", "").lower() == address.lower():
-            outgoing += value
-    
-    return txs, incoming, outgoing
-
-# ==========================================
-# ETHEREUM NATIVE
+# ETHEREUM BALANCE
 # ==========================================
 def get_eth_balance(address):
     url = "https://api.etherscan.io/v2/api"
@@ -121,7 +65,6 @@ def get_eth_balance(address):
     }
     resp = requests.get(url, params=params)
     data = resp.json()
-    
     if data.get("status") == "1":
         return int(data["result"]) / 10**18
     return 0
@@ -149,9 +92,61 @@ def get_eth_transactions(address, days=30):
     
     incoming = 0
     outgoing = 0
-    
     for tx in txs:
         value = int(tx["value"]) / 10**18
+        if tx.get("to", "").lower() == address.lower():
+            incoming += value
+        elif tx.get("from", "").lower() == address.lower():
+            outgoing += value
+    
+    return txs, incoming, outgoing
+
+# ==========================================
+# USDT ETHEREUM
+# ==========================================
+def get_usdt_balance(address):
+    url = "https://api.etherscan.io/v2/api"
+    params = {
+        "chainid": 1,
+        "module": "account",
+        "action": "tokenbalance",
+        "contractaddress": USDT_CONTRACT,
+        "address": address,
+        "tag": "latest",
+        "apikey": ETHERSCAN_API_KEY
+    }
+    resp = requests.get(url, params=params)
+    data = resp.json()
+    if data.get("status") == "1":
+        return int(data["result"]) / 10**6
+    return 0
+
+def get_usdt_transactions(address, days=30):
+    url = "https://api.etherscan.io/v2/api"
+    params = {
+        "chainid": 1,
+        "module": "account",
+        "action": "tokentx",
+        "contractaddress": USDT_CONTRACT,
+        "address": address,
+        "startblock": "0",
+        "endblock": "99999999",
+        "sort": "desc",
+        "apikey": ETHERSCAN_API_KEY
+    }
+    resp = requests.get(url, params=params)
+    data = resp.json()
+    
+    if data.get("status") != "1":
+        return [], 0, 0
+    
+    cutoff = int(time.time()) - days * 86400
+    txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
+    
+    incoming = 0
+    outgoing = 0
+    for tx in txs:
+        value = int(tx["value"]) / 10**6
         if tx.get("to", "").lower() == address.lower():
             incoming += value
         elif tx.get("from", "").lower() == address.lower():
@@ -192,59 +187,20 @@ def get_btc_transactions(address, days=30):
 # ==========================================
 # SOLANA
 # ==========================================
-SOLSCAN_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVhdGVkQXQiOjE3NDM2MjA5ODU5MjQsImVtYWlsIjoiYW5kcmV5LmR2b3JvdkBnbWFpbC5jb20iLCJhY3Rpb24iOiJmcmVlIn0.RV3vV3ulV0qXq6hVxg3Lsxf8oJq9sWvD7PqVqVqVqVq"
-
 def get_sol_balance(address):
     try:
-        # Используем Solana RPC вместо Solscan API
-        url = "https://api.mainnet-beta.solana.com"
-        headers = {"Content-Type": "application/json"}
-        payload = {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getBalance",
-            "params": [address]
-        }
-        resp = requests.post(url, json=payload, headers=headers)
+        resp = requests.post("https://api.mainnet-beta.solana.com", 
+            json={"jsonrpc": "2.0", "id": 1, "method": "getBalance", "params": [address]},
+            headers={"Content-Type": "application/json"})
         data = resp.json()
         if "result" in data:
             return data["result"]["value"] / 10**9
         return 0
-    except Exception as e:
-        print(f"Solana balance error: {e}")
+    except:
         return 0
 
 def get_sol_transactions(address, days=30):
-    try:
-        # Получаем сигнатуры транзакций
-        url = "https://api.mainnet-beta.solana.com"
-        headers = {"Content-Type": "application/json"}
-        
-        # Сначала получаем список транзакций
-        payload = {
-            "jsonrpc": "2.0",
-            "id": 1,
-            "method": "getSignaturesForAddress",
-            "params": [address, {"limit": 100}]
-        }
-        resp = requests.post(url, json=payload, headers=headers)
-        data = resp.json()
-        
-        if "result" not in data:
-            return [], 0, 0
-        
-        cutoff = int(time.time()) - days * 86400
-        txs = []
-        for sig in data["result"]:
-            if sig.get("blockTime", 0) >= cutoff:
-                txs.append(sig)
-        
-        # Solana сложно посчитать incoming/outgoing через RPC
-        # Пока возвращаем только количество
-        return txs, 0, 0
-    except Exception as e:
-        print(f"Solana transactions error: {e}")
-        return [], 0, 0
+    return [], 0, 0
 
 # ==========================================
 # FLASK APP
@@ -268,7 +224,7 @@ def analyze():
     network = data.get('network')
     days = int(data.get('days', 30))
     
-    print(f"=== REQUEST === coin={coin}, network={network}, days={days}, address={address}")
+    print(f"Analyze: coin={coin}, network={network}, address={address}")
     
     # BTC
     if coin == "BTC":
@@ -284,8 +240,8 @@ def analyze():
     
     # USDT on Ethereum
     elif coin == "USDT" and network == "ethereum":
-        balance = get_usdt_ethereum_balance(address)
-        txs, incoming, outgoing = get_usdt_ethereum_transactions(address, days)
+        balance = get_usdt_balance(address)
+        txs, incoming, outgoing = get_usdt_transactions(address, days)
         insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
     
     # ETH on Ethereum
@@ -295,9 +251,9 @@ def analyze():
         insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
     
     else:
-        return jsonify({'error': f'Coin {coin} on network {network} not supported yet'}), 400
+        return jsonify({'error': f'Coin {coin} on network {network} not supported'}), 400
     
-    # Get USD price
+    # Get USD price for this coin
     usd_price = get_usd_price(coin)
     balance_usd = balance * usd_price
     
@@ -309,7 +265,7 @@ def analyze():
         daily[day_date] = 0
     
     for tx in txs:
-        ts = tx.get("timeStamp") or tx.get("status", {}).get("block_time") or tx.get("blockTime", 0)
+        ts = tx.get("timeStamp") or tx.get("status", {}).get("block_time") or 0
         if ts:
             tx_date = datetime.fromtimestamp(int(ts)).strftime('%Y-%m-%d')
             if tx_date in daily:
@@ -329,7 +285,7 @@ def analyze():
         'dailyData': daily_data
     }
     
-    print(f"=== RESULT === balance={result['balance']}, balanceUsd={result['balanceUsd']}")
+    print(f"Result: balance={balance}, balanceUsd={balance_usd}")
     return jsonify(result)
 
 def run_flask():
@@ -347,5 +303,5 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 app = ApplicationBuilder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start))
 
-print("Bot started with USD conversion!")
+print("Bot started with USD price support!")
 app.run_polling()
