@@ -16,17 +16,10 @@ const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 const networks = {
     BTC: [{ id: "bitcoin", name: "Bitcoin", icon: "₿", description: "Bitcoin Mainnet" }],
     ETH: [
-        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
-        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum One" },
-        { id: "optimism", name: "Optimism", icon: "✨", description: "OP Mainnet" },
-        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" }
+        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" }
     ],
     USDT: [
-        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
-        { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BEP-20" },
-        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" },
-        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum" },
-        { id: "optimism", name: "Optimism", icon: "✨", description: "Optimism" }
+        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" }
     ],
     BNB: [
         { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BSC Mainnet" }
@@ -94,6 +87,15 @@ function startAnimation(chart, targetData, startData, duration) {
 // Screen navigation
 function showWelcome() {
     document.getElementById('welcomeScreen').style.display = 'flex';
+    document.getElementById('optionsScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
+}
+
+function showOptionsScreen() {
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'block';
     document.getElementById('coinScreen').style.display = 'none';
     document.getElementById('networkScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'none';
@@ -101,6 +103,7 @@ function showWelcome() {
 
 function showCoinScreen() {
     document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
     document.getElementById('coinScreen').style.display = 'block';
     document.getElementById('networkScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'none';
@@ -132,6 +135,7 @@ function showNetworkScreen(coin) {
     });
     
     document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
     document.getElementById('coinScreen').style.display = 'none';
     document.getElementById('networkScreen').style.display = 'block';
     document.getElementById('mainScreen').style.display = 'none';
@@ -143,11 +147,11 @@ function showMainScreen() {
     document.getElementById('walletAddress').placeholder = getPlaceholder();
     
     document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('optionsScreen').style.display = 'none';
     document.getElementById('coinScreen').style.display = 'none';
     document.getElementById('networkScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'block';
     
-    // Reset
     document.getElementById('walletAddress').value = '';
     document.getElementById('results').style.display = 'none';
     document.getElementById('showChartBtn').style.display = 'none';
@@ -162,7 +166,16 @@ function getPlaceholder() {
 }
 
 // Event listeners
-document.getElementById('startWorkBtn').onclick = showCoinScreen;
+document.getElementById('startWorkBtn').onclick = showOptionsScreen;
+document.getElementById('analyzeWalletCard').onclick = showCoinScreen;
+
+document.getElementById('portfolioCard').onclick = () => {
+    tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
+};
+
+document.getElementById('backToOptions').onclick = showOptionsScreen;
+document.getElementById('backToCoin').onclick = showCoinScreen;
+document.getElementById('backToNetwork').onclick = () => showNetworkScreen(selectedCoin);
 
 document.querySelectorAll('.coin-card').forEach(card => {
     card.onclick = () => {
@@ -170,9 +183,6 @@ document.querySelectorAll('.coin-card').forEach(card => {
         showNetworkScreen(coin);
     };
 });
-
-document.getElementById('backToCoin').onclick = showCoinScreen;
-document.getElementById('backToNetwork').onclick = () => showNetworkScreen(selectedCoin);
 
 document.querySelectorAll('.period-btn').forEach(btn => {
     btn.onclick = () => {
@@ -208,6 +218,12 @@ document.getElementById('analyzeBtn').onclick = async () => {
         
         const data = await response.json();
         document.getElementById('loading').style.display = 'none';
+        
+        if (data.error) {
+            tg.showPopup({ title: 'Error', message: data.error, buttons: [{type: 'ok'}] });
+            return;
+        }
+        
         displayResults(data);
     } catch (error) {
         document.getElementById('loading').style.display = 'none';
