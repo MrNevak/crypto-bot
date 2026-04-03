@@ -1,8 +1,9 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
-let selectedToken = 'ETH';
-let selectedDays = 7;
+let selectedCoin = null;
+let selectedNetwork = null;
+let selectedDays = 30;
 let chart = null;
 let currentDailyData = null;
 let animationFrame = null;
@@ -10,6 +11,33 @@ let isAnimating = false;
 let animationDuration = 4000;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
+
+// Network configurations
+const networks = {
+    BTC: [{ id: "bitcoin", name: "Bitcoin", icon: "₿", description: "Bitcoin Mainnet" }],
+    ETH: [
+        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
+        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum One" },
+        { id: "optimism", name: "Optimism", icon: "✨", description: "OP Mainnet" },
+        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" }
+    ],
+    USDT: [
+        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
+        { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BEP-20" },
+        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" },
+        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum" },
+        { id: "optimism", name: "Optimism", icon: "✨", description: "Optimism" }
+    ],
+    BNB: [
+        { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BSC Mainnet" }
+    ],
+    SOL: [
+        { id: "solana", name: "Solana", icon: "◎", description: "Solana Mainnet" }
+    ],
+    TON: [
+        { id: "ton", name: "TON", icon: "⍟", description: "TON Mainnet" }
+    ]
+};
 
 function formatDate(dateStr) {
     const date = new Date(dateStr);
@@ -63,59 +91,89 @@ function startAnimation(chart, targetData, startData, duration) {
     animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, startTime));
 }
 
-// Переключение экранов
-function showWelcomeScreen() {
+// Screen navigation
+function showWelcome() {
     document.getElementById('welcomeScreen').style.display = 'flex';
-    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'none';
 }
 
-function showStartScreen() {
+function showCoinScreen() {
     document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('startScreen').style.display = 'block';
+    document.getElementById('coinScreen').style.display = 'block';
+    document.getElementById('networkScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
+}
+
+function showNetworkScreen(coin) {
+    selectedCoin = coin;
+    document.getElementById('selectedCoinName').textContent = `${coin} Networks`;
+    
+    const networksList = document.getElementById('networksList');
+    networksList.innerHTML = '';
+    
+    const coinNetworks = networks[coin] || [];
+    coinNetworks.forEach(net => {
+        const div = document.createElement('div');
+        div.className = 'network-card';
+        div.innerHTML = `
+            <div class="network-icon">${net.icon}</div>
+            <div class="network-info">
+                <h4>${net.name}</h4>
+                <p>${net.description}</p>
+            </div>
+        `;
+        div.onclick = () => {
+            selectedNetwork = net.id;
+            showMainScreen();
+        };
+        networksList.appendChild(div);
+    });
+    
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'block';
     document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showMainScreen() {
+    document.getElementById('analysisTitle').textContent = `${selectedCoin} Analysis`;
+    document.getElementById('analysisSubtitle').textContent = `Network: ${selectedNetwork.toUpperCase()}`;
+    document.getElementById('walletAddress').placeholder = getPlaceholder();
+    
     document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('coinScreen').style.display = 'none';
+    document.getElementById('networkScreen').style.display = 'none';
     document.getElementById('mainScreen').style.display = 'block';
-}
-
-// КНОПКА START WORK
-document.getElementById('startWorkBtn').onclick = function() {
-    showStartScreen();
-};
-
-// КНОПКА ANALYZE WALLET
-document.getElementById('analyzeCard').onclick = function() {
-    showMainScreen();
-};
-
-// КНОПКА BACK НА СТАРТОВЫЙ ЭКРАН
-document.getElementById('backToStart').onclick = function() {
-    showStartScreen();
+    
+    // Reset
     document.getElementById('walletAddress').value = '';
     document.getElementById('results').style.display = 'none';
     document.getElementById('showChartBtn').style.display = 'none';
     currentDailyData = null;
-};
+}
 
-// Portfolio Tracker
-document.getElementById('portfolioCard').onclick = function() {
-    tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
-};
+function getPlaceholder() {
+    if (selectedCoin === 'BTC') return 'Enter Bitcoin address (bc1... or 1...)';
+    if (selectedCoin === 'SOL') return 'Enter Solana address';
+    if (selectedCoin === 'TON') return 'Enter TON address';
+    return 'Enter wallet address (0x...)';
+}
 
-// Token buttons
-document.querySelectorAll('.token-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        selectedToken = btn.dataset.token;
+// Event listeners
+document.getElementById('startWorkBtn').onclick = showCoinScreen;
+
+document.querySelectorAll('.coin-card').forEach(card => {
+    card.onclick = () => {
+        const coin = card.dataset.coin;
+        showNetworkScreen(coin);
     };
 });
 
-// Period buttons
+document.getElementById('backToCoin').onclick = showCoinScreen;
+document.getElementById('backToNetwork').onclick = () => showNetworkScreen(selectedCoin);
+
 document.querySelectorAll('.period-btn').forEach(btn => {
     btn.onclick = () => {
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
@@ -124,12 +182,11 @@ document.querySelectorAll('.period-btn').forEach(btn => {
     };
 });
 
-// Analyze button
 document.getElementById('analyzeBtn').onclick = async () => {
     const address = document.getElementById('walletAddress').value.trim();
     
-    if (!address || !address.startsWith('0x') || address.length !== 42) {
-        tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
+    if (!address) {
+        tg.showPopup({ title: 'Error', message: 'Enter a wallet address', buttons: [{type: 'ok'}] });
         return;
     }
     
@@ -141,7 +198,12 @@ document.getElementById('analyzeBtn').onclick = async () => {
         const response = await fetch(`${API_URL}/analyze`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
+            body: JSON.stringify({ 
+                address, 
+                coin: selectedCoin, 
+                network: selectedNetwork, 
+                days: selectedDays 
+            })
         });
         
         const data = await response.json();
@@ -153,49 +215,35 @@ document.getElementById('analyzeBtn').onclick = async () => {
     }
 };
 
-// Show chart button
 document.getElementById('showChartBtn').onclick = () => {
     if (currentDailyData && !isAnimating) {
         showChartModal(currentDailyData);
     }
 };
 
-// Back button in modal
 document.getElementById('backBtn').onclick = () => {
     stopAnimation();
     document.getElementById('chartModal').style.display = 'none';
 };
 
 function displayResults(data) {
-    document.getElementById('balance').textContent = `${data.balance} ${selectedToken}`;
+    document.getElementById('balance').textContent = `${data.balance} ${selectedCoin}`;
     document.getElementById('txCount').textContent = data.txCount;
-    document.getElementById('incoming').textContent = `${data.incoming} ${selectedToken}`;
-    document.getElementById('outgoing').textContent = `${data.outgoing} ${selectedToken}`;
+    document.getElementById('incoming').textContent = `${data.incoming} ${selectedCoin}`;
+    document.getElementById('outgoing').textContent = `${data.outgoing} ${selectedCoin}`;
     document.getElementById('insight').textContent = data.insight;
-    document.getElementById('gasFees').textContent = `0 ETH`;
+    document.getElementById('gasFees').textContent = `—`;
     
-    if (data.topSenders && data.topSenders.length > 0) {
-        document.getElementById('topSenders').innerHTML = data.topSenders.map(([addr, val]) => 
-            `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
-        ).join('');
-    } else {
-        document.getElementById('topSenders').innerHTML = 'no data';
-    }
+    document.getElementById('topSenders').innerHTML = data.topSenders?.length ? 
+        data.topSenders.map(([addr, val]) => `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)}</div>`).join('') : 'no data';
     
-    if (data.topReceivers && data.topReceivers.length > 0) {
-        document.getElementById('topReceivers').innerHTML = data.topReceivers.map(([addr, val]) => 
-            `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
-        ).join('');
-    } else {
-        document.getElementById('topReceivers').innerHTML = 'no data';
-    }
+    document.getElementById('topReceivers').innerHTML = data.topReceivers?.length ?
+        data.topReceivers.map(([addr, val]) => `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)}</div>`).join('') : 'no data';
     
     currentDailyData = data.dailyData;
     
     if (currentDailyData && currentDailyData.length > 0) {
         document.getElementById('showChartBtn').style.display = 'block';
-    } else {
-        document.getElementById('showChartBtn').style.display = 'none';
     }
     
     document.getElementById('results').style.display = 'block';
@@ -205,16 +253,9 @@ function displayResults(data) {
 function showChartModal(dailyData) {
     const canvas = document.getElementById('txChartModal');
     
-    if (!dailyData || dailyData.length === 0) {
-        return;
-    }
+    if (!dailyData || dailyData.length === 0) return;
     
-    const labels = dailyData.map(d => {
-        if (d.date.includes('Week')) {
-            return d.date;
-        }
-        return formatDate(d.date);
-    });
+    const labels = dailyData.map(d => d.date.includes('Week') ? d.date : formatDate(d.date));
     const targetData = dailyData.map(d => d.count);
     const startData = new Array(targetData.length).fill(0);
     
@@ -253,25 +294,12 @@ function showChartModal(dailyData) {
                     titleColor: '#F0E1B9',
                     bodyColor: '#aaa',
                     borderColor: '#D4C4A8',
-                    borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            return `📊 Transactions: ${context.raw}`;
-                        }
-                    }
+                    borderWidth: 1
                 }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: { color: 'rgba(212, 196, 168, 0.1)', lineWidth: 1 },
-                    ticks: { color: '#aaa', stepSize: 1, font: { size: 11 } },
-                    title: { display: true, text: 'Number of Transactions', color: '#888', font: { size: 11 } }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#aaa', maxRotation: 45, autoSkip: true, font: { size: 11 } }
-                }
+                y: { beginAtZero: true, grid: { color: 'rgba(212, 196, 168, 0.1)' }, ticks: { color: '#aaa' } },
+                x: { grid: { display: false }, ticks: { color: '#aaa', maxRotation: 45, autoSkip: true } }
             }
         }
     });
@@ -285,5 +313,4 @@ function showChartModal(dailyData) {
     }, 100);
 }
 
-// Start
-showWelcomeScreen();
+showWelcome();
