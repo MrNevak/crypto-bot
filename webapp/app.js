@@ -355,14 +355,5 @@ function showChartModal(dailyData) {
     }, 100);
 }
     
-    document.getElementById('chartModal').style.display = 'flex';
-    
-    setTimeout(() => {
-        if (chart && !isAnimating) {
-            startAnimation(chart, targetData, startData, animationDuration);
-        }
-    }, 100);
-}
-
 // Start with welcome screen
 showWelcome();
