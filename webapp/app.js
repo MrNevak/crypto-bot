@@ -3,6 +3,7 @@ tg.expand();
 
 let selectedToken = 'ETH';
 let selectedDays = 7;
+let chart = null;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
@@ -32,6 +33,7 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     
     document.getElementById('loading').classList.remove('hidden');
     document.getElementById('results').classList.add('hidden');
+    document.getElementById('chartContainer').classList.add('hidden');
     
     try {
         const response = await fetch(`${API_URL}/analyze`, {
@@ -73,6 +75,72 @@ function displayResults(data) {
         document.getElementById('topReceivers').innerHTML = 'no data';
     }
     
+    if (data.dailyData && data.dailyData.length > 0) {
+        drawChart(data.dailyData);
+    }
+    
     document.getElementById('results').classList.remove('hidden');
     tg.ready();
+}
+
+function drawChart(dailyData) {
+    const container = document.getElementById('chartContainer');
+    const canvas = document.getElementById('txChart');
+    
+    if (!dailyData || dailyData.length === 0) {
+        container.classList.add('hidden');
+        return;
+    }
+    
+    container.classList.remove('hidden');
+    
+    const labels = dailyData.map(d => d.date.slice(5));
+    const counts = dailyData.map(d => d.count);
+    
+    if (chart) {
+        chart.destroy();
+    }
+    
+    chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Transactions',
+                data: counts,
+                backgroundColor: '#3390ec',
+                borderRadius: 6,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            animation: {
+                duration: 3000,
+                easing: 'easeOutQuart'
+            },
+            plugins: {
+                legend: {
+                    labels: { color: '#aaa', font: { size: 11 } }
+                },
+                tooltip: {
+                    backgroundColor: '#1a1a1a',
+                    titleColor: '#fff',
+                    bodyColor: '#aaa'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: '#2a2a2a' },
+                    ticks: { color: '#aaa', stepSize: 1 }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#aaa', maxRotation: 45, autoSkip: true }
+                }
+            }
+        }
+    });
 }
