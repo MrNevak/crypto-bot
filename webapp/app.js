@@ -121,14 +121,14 @@ function showChartModal(dailyData) {
                 label: 'Transactions',
                 data: zeroCounts,
                 borderColor: '#f5a623',
-                backgroundColor: 'rgba(245, 166, 35, 0.1)',
+                backgroundColor: 'rgba(245, 166, 35, 0.05)',
                 borderWidth: 3,
                 pointRadius: 5,
-                pointHoverRadius: 7,
+                pointHoverRadius: 8,
                 pointBackgroundColor: '#f5a623',
                 pointBorderColor: '#0a0a0a',
                 pointBorderWidth: 2,
-                tension: 0.3,
+                tension: 0.4,
                 fill: true
             }]
         },
@@ -146,9 +146,11 @@ function showChartModal(dailyData) {
                     backgroundColor: '#1a1a1a',
                     titleColor: '#f5a623',
                     bodyColor: '#aaa',
+                    borderColor: '#f5a623',
+                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
-                            return `Transactions: ${context.raw}`;
+                            return `📊 Transactions: ${context.raw}`;
                         }
                     }
                 }
@@ -156,12 +158,35 @@ function showChartModal(dailyData) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { color: '#2a2a2a' },
-                    ticks: { color: '#aaa', stepSize: 1 }
+                    grid: { 
+                        color: 'rgba(245, 166, 35, 0.1)',
+                        lineWidth: 1
+                    },
+                    ticks: { 
+                        color: '#aaa', 
+                        stepSize: 1,
+                        font: { size: 11 }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Number of Transactions',
+                        color: '#888',
+                        font: { size: 11 }
+                    }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { color: '#aaa', maxRotation: 45, autoSkip: true }
+                    ticks: { 
+                        color: '#aaa', 
+                        maxRotation: 45, 
+                        autoSkip: true,
+                        font: { size: 11 }
+                    }
+                }
+            },
+            elements: {
+                line: {
+                    borderJoin: 'round'
                 }
             }
         }
@@ -172,7 +197,7 @@ function showChartModal(dailyData) {
     setTimeout(() => {
         chart.data.datasets[0].data = realCounts;
         chart.update({
-            duration: 2000,
+            duration: 7000,
             easing: 'easeOutQuart'
         });
     }, 100);
