@@ -8,103 +8,136 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>💰 Crypto Wallet Analyzer</h1>
-            <p class="subtitle">Analyze ETH and USDT transactions</p>
-        </div>
-
-        <div class="card">
-            <div class="token-selector">
-                <button class="token-btn active" data-token="ETH">
-                    <img src="icons/ethereum-eth-logo.svg" class="token-icon" alt="ETH">
-                    ETH
-                </button>
-                <button class="token-btn" data-token="USDT">
-                    <img src="icons/tether-usdt-logo.svg" class="token-icon" alt="USDT">
-                    USDT
-                </button>
+    <div class="container" id="app">
+        <!-- НАЧАЛЬНЫЙ ЭКРАН -->
+        <div id="startScreen">
+            <div class="header">
+                <h1>💰 Crypto Wallet Analyzer</h1>
+                <p class="subtitle">Your personal crypto assistant</p>
             </div>
 
-            <div class="period-selector">
-                <button class="period-btn active" data-days="7">7 days</button>
-                <button class="period-btn" data-days="30">30 days</button>
-            </div>
-
-            <div class="input-group">
-                <input type="text" id="walletAddress" placeholder="Enter wallet address (0x...)" autocomplete="off">
-                <button id="analyzeBtn" class="analyze-btn">🔍 Analyze</button>
-                <button id="showChartBtn" class="analyze-btn hidden" style="margin-top: 8px; background: #2a2a2a;">📊 Show Chart</button>
-            </div>
-        </div>
-
-        <div id="loading" class="loading hidden">
-            <div class="spinner"></div>
-            <p>Analyzing wallet...</p>
-        </div>
-
-        <div id="results" class="results hidden">
-            <div class="balance-card">
-                <span class="label">Balance</span>
-                <span class="value" id="balance">—</span>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-label">📊 Transactions</span>
-                    <span class="stat-value" id="txCount">—</span>
+            <div class="launcher-cards">
+                <div class="launcher-card" id="analyzeCard">
+                    <div class="card-icon">📊</div>
+                    <h2>Analyze Wallet</h2>
+                    <p>Check balance, transactions and get insights</p>
+                    <div class="card-glow"></div>
                 </div>
-                <div class="stat-card">
-                    <span class="stat-label">⬇️ Received</span>
-                    <span class="stat-value positive" id="incoming">—</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">⬆️ Sent</span>
-                    <span class="stat-value negative" id="outgoing">—</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-label">⛽ Gas Fees</span>
-                    <span class="stat-value" id="gasFees">—</span>
+
+                <div class="launcher-card disabled" id="portfolioCard">
+                    <div class="card-icon">📈</div>
+                    <h2>Portfolio Tracker</h2>
+                    <p>Coming soon</p>
+                    <div class="soon-badge">Soon</div>
+                    <div class="card-glow"></div>
                 </div>
             </div>
 
-            <div class="insight-card">
-                <span class="insight-icon">💡</span>
-                <span id="insight">—</span>
-            </div>
-
-            <div class="top-section">
-                <div class="top-card">
-                    <h3>🏆 Top Senders</h3>
-                    <div id="topSenders" class="top-list">—</div>
-                </div>
-                <div class="top-card">
-                    <h3>🎯 Top Receivers</h3>
-                    <div id="topReceivers" class="top-list">—</div>
-                </div>
+            <div class="footer">
+                <p>Data provided by Etherscan</p>
             </div>
         </div>
 
-        <div class="footer">
-            <p>Data provided by Etherscan</p>
+        <!-- ОСНОВНОЙ ЭКРАН АНАЛИЗА (был ранее) -->
+        <div id="mainScreen" class="hidden">
+            <div class="header">
+                <button id="backToStart" class="back-text" style="position: absolute; left: 20px; top: 20px;">← Back</button>
+                <h1>💰 Crypto Wallet Analyzer</h1>
+                <p class="subtitle">Analyze ETH and USDT transactions</p>
+            </div>
+
+            <div class="card">
+                <div class="token-selector">
+                    <button class="token-btn active" data-token="ETH">
+                        <img src="icons/ethereum-eth-logo.svg" class="token-icon" alt="ETH">
+                        ETH
+                    </button>
+                    <button class="token-btn" data-token="USDT">
+                        <img src="icons/tether-usdt-logo.svg" class="token-icon" alt="USDT">
+                        USDT
+                    </button>
+                </div>
+
+                <div class="period-selector">
+                    <button class="period-btn active" data-days="7">7 days</button>
+                    <button class="period-btn" data-days="30">30 days</button>
+                </div>
+
+                <div class="input-group">
+                    <input type="text" id="walletAddress" placeholder="Enter wallet address (0x...)" autocomplete="off">
+                    <button id="analyzeBtn" class="analyze-btn">🔍 Analyze</button>
+                    <button id="showChartBtn" class="analyze-btn hidden" style="margin-top: 8px;">📊 Show Chart</button>
+                </div>
+            </div>
+
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Analyzing wallet...</p>
+            </div>
+
+            <div id="results" class="results hidden">
+                <div class="balance-card">
+                    <span class="label">Balance</span>
+                    <span class="value" id="balance">—</span>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">📊 Transactions</span>
+                        <span class="stat-value" id="txCount">—</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">⬇️ Received</span>
+                        <span class="stat-value positive" id="incoming">—</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">⬆️ Sent</span>
+                        <span class="stat-value negative" id="outgoing">—</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">⛽ Gas Fees</span>
+                        <span class="stat-value" id="gasFees">—</span>
+                    </div>
+                </div>
+
+                <div class="insight-card">
+                    <span class="insight-icon">💡</span>
+                    <span id="insight">—</span>
+                </div>
+
+                <div class="top-section">
+                    <div class="top-card">
+                        <h3>🏆 Top Senders</h3>
+                        <div id="topSenders" class="top-list">—</div>
+                    </div>
+                    <div class="top-card">
+                        <h3>🎯 Top Receivers</h3>
+                        <div id="topReceivers" class="top-list">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Data provided by Etherscan</p>
+            </div>
         </div>
     </div>
 
-<!-- Модальное окно для графика -->
-<div id="chartModal" class="modal hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <span id="backBtn" class="back-text">← Back</span>
-            <span class="modal-title">Transaction History</span>
-        </div>
-        <div class="modal-body">
-            <div class="chart-wrapper">
-                <canvas id="txChartModal"></canvas>
+    <!-- Модальное окно для графика -->
+    <div id="chartModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span id="backBtn" class="back-text">← Back</span>
+                <span class="modal-title">Transaction History</span>
+            </div>
+            <div class="modal-body">
+                <div class="chart-wrapper">
+                    <canvas id="txChartModal"></canvas>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
 </body>
