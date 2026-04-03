@@ -58,14 +58,8 @@ document.getElementById('showChartBtn').addEventListener('click', () => {
     }
 });
 
-document.getElementById('closeModalBtn').addEventListener('click', () => {
+document.getElementById('backBtn').addEventListener('click', () => {
     document.getElementById('chartModal').classList.add('hidden');
-});
-
-document.getElementById('chartModal').addEventListener('click', (e) => {
-    if (e.target === document.getElementById('chartModal')) {
-        document.getElementById('chartModal').classList.add('hidden');
-    }
 });
 
 function displayResults(data) {
@@ -111,7 +105,7 @@ function showChartModal(dailyData) {
         return;
     }
     
-    const labels = dailyData.map(d => d.date.slice(5));
+    const labels = dailyData.map(d => d.date);
     const realCounts = dailyData.map(d => d.count);
     const zeroCounts = new Array(realCounts.length).fill(0);
     
@@ -124,13 +118,13 @@ function showChartModal(dailyData) {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Transactions per day',
+                label: 'Transactions',
                 data: zeroCounts,
                 borderColor: '#f5a623',
                 backgroundColor: 'rgba(245, 166, 35, 0.1)',
-                borderWidth: 2,
-                pointRadius: 4,
-                pointHoverRadius: 6,
+                borderWidth: 3,
+                pointRadius: 5,
+                pointHoverRadius: 7,
                 pointBackgroundColor: '#f5a623',
                 pointBorderColor: '#0a0a0a',
                 pointBorderWidth: 2,
@@ -146,7 +140,7 @@ function showChartModal(dailyData) {
             },
             plugins: {
                 legend: {
-                    labels: { color: '#aaa', font: { size: 11 } }
+                    display: false
                 },
                 tooltip: {
                     backgroundColor: '#1a1a1a',
@@ -178,7 +172,7 @@ function showChartModal(dailyData) {
     setTimeout(() => {
         chart.data.datasets[0].data = realCounts;
         chart.update({
-            duration: 3000,
+            duration: 2000,
             easing: 'easeOutQuart'
         });
     }, 100);
