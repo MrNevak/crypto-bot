@@ -40,7 +40,12 @@ USDT_CONTRACTS = {
 # ==========================================
 # 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ
 # ==========================================
+# ==========================================
+# ИСПРАВЛЕННЫЕ ФУНКЦИИ ДЛЯ USDT НА ETHEREUM
+# ==========================================
+
 def get_evm_balance(address, chain, contract=None):
+    """Get balance for EVM chains"""
     explorers = {
         "ethereum": {"url": "https://api.etherscan.io/api", "api_key": ETHERSCAN_API_KEY},
         "bsc": {"url": "https://api.bscscan.com/api", "api_key": BSCSCAN_API_KEY},
@@ -54,6 +59,7 @@ def get_evm_balance(address, chain, contract=None):
         return 0
     
     if contract:
+        # Token balance
         params = {
             "module": "account",
             "action": "tokenbalance",
@@ -62,7 +68,17 @@ def get_evm_balance(address, chain, contract=None):
             "tag": "latest",
             "apikey": explorer["api_key"]
         }
+        resp = requests.get(explorer["url"], params=params)
+        data = resp.json()
+        
+        if data.get("status") == "1":
+            # USDT имеет 6 decimals, остальные токены 18
+            if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
+                return int(data["result"]) / 10**6
+            else:
+                return int(data["result"]) / 10**18
     else:
+        # Native coin balance
         params = {
             "module": "account",
             "action": "balance",
@@ -70,22 +86,22 @@ def get_evm_balance(address, chain, contract=None):
             "tag": "latest",
             "apikey": explorer["api_key"]
         }
+        resp = requests.get(explorer["url"], params=params)
+        data = resp.json()
+        
+        if data.get("status") == "1":
+            return int(data["result"]) / 10**18
     
-    resp = requests.get(explorer["url"], params=params)
-    data = resp.json()
-    
-    if data.get("status") == "1":
-        return int(data["result"]) / 10**18
     return 0
 
 def get_evm_transactions(address, chain, days=30, contract=None):
     """Get transactions for EVM chains"""
     explorers = {
-        "ethereum": {"url": "https://api.etherscan.io/v2/api", "api_key": ETHERSCAN_API_KEY},
-        "bsc": {"url": "https://api.bscscan.com/v2/api", "api_key": BSCSCAN_API_KEY},
-        "polygon": {"url": "https://api.polygonscan.com/v2/api", "api_key": POLYGONSCAN_API_KEY},
-        "arbitrum": {"url": "https://api.arbiscan.io/v2/api", "api_key": ARBISCAN_API_KEY},
-        "optimism": {"url": "https://api-optimistic.etherscan.io/v2/api", "api_key": OPTIMISMSCAN_API_KEY}
+        "ethereum": {"url": "https://api.etherscan.io/api", "api_key": ETHERSCAN_API_KEY},
+        "bsc": {"url": "https://api.bscscan.com/api", "api_key": BSCSCAN_API_KEY},
+        "polygon": {"url": "https://api.polygonscan.com/api", "api_key": POLYGONSCAN_API_KEY},
+        "arbitrum": {"url": "https://api.arbiscan.io/api", "api_key": ARBISCAN_API_KEY},
+        "optimism": {"url": "https://api-optimistic.etherscan.io/api", "api_key": OPTIMISMSCAN_API_KEY}
     }
     
     explorer = explorers.get(chain)
@@ -129,10 +145,16 @@ def get_evm_transactions(address, chain, days=30, contract=None):
     
     incoming = 0
     outgoing = 0
+    
     for tx in txs:
         if contract:
+            # Token transaction
             value = int(tx["value"]) / 10**18
+            # USDT имеет 6 decimals
+            if contract.lower() == USDT_CONTRACTS.get("ethereum", "").lower():
+                value = int(tx["value"]) / 10**6
         else:
+            # Native transaction
             value = int(tx["value"]) / 10**18
         
         if tx.get("to", "").lower() == address.lower():
@@ -141,7 +163,6 @@ def get_evm_transactions(address, chain, days=30, contract=None):
             outgoing += value
     
     return txs, incoming, outgoing
-
 # ==========================================
 # 4. ФУНКЦИИ ДЛЯ BITCOIN
 # ==========================================
