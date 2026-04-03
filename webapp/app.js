@@ -34,7 +34,6 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
     
     document.getElementById('loading').classList.remove('hidden');
     document.getElementById('results').classList.add('hidden');
-    document.getElementById('chartContainer').classList.add('hidden');
     document.getElementById('showChartBtn').classList.add('hidden');
     
     try {
@@ -55,8 +54,18 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
 
 document.getElementById('showChartBtn').addEventListener('click', () => {
     if (currentDailyData) {
-        drawChart(currentDailyData);
-        document.getElementById('chartContainer').classList.remove('hidden');
+        showChartModal(currentDailyData);
+    }
+});
+
+document.getElementById('closeModalBtn').addEventListener('click', () => {
+    document.getElementById('chartModal').classList.add('hidden');
+});
+
+// Закрытие по клику вне окна
+document.getElementById('chartModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('chartModal')) {
+        document.getElementById('chartModal').classList.add('hidden');
     }
 });
 
@@ -96,8 +105,8 @@ function displayResults(data) {
     tg.ready();
 }
 
-function drawChart(dailyData) {
-    const canvas = document.getElementById('txChart');
+function showChartModal(dailyData) {
+    const canvas = document.getElementById('txChartModal');
     
     if (!dailyData || dailyData.length === 0) {
         return;
@@ -164,4 +173,6 @@ function drawChart(dailyData) {
             }
         }
     });
+    
+    document.getElementById('chartModal').classList.remove('hidden');
 }
