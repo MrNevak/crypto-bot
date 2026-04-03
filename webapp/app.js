@@ -64,6 +64,35 @@ function startAnimation(chart, targetData, startData, duration) {
     animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, animationStartTime));
 }
 
+// Переключение экранов
+function showStartScreen() {
+    document.getElementById('startScreen').classList.remove('hidden');
+    document.getElementById('mainScreen').classList.add('hidden');
+}
+
+function showMainScreen() {
+    document.getElementById('startScreen').classList.add('hidden');
+    document.getElementById('mainScreen').classList.remove('hidden');
+}
+
+// Обработчики карточек
+document.getElementById('analyzeCard').addEventListener('click', () => {
+    showMainScreen();
+});
+
+document.getElementById('portfolioCard').addEventListener('click', () => {
+    tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
+});
+
+document.getElementById('backToStart').addEventListener('click', () => {
+    showStartScreen();
+    // Сброс формы
+    document.getElementById('walletAddress').value = '';
+    document.getElementById('results').classList.add('hidden');
+    document.getElementById('showChartBtn').classList.add('hidden');
+    currentDailyData = null;
+});
+
 document.querySelectorAll('.token-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
@@ -261,3 +290,6 @@ function showChartModal(dailyData) {
         }
     }, 50);
 }
+
+// Показываем стартовый экран при загрузке
+showStartScreen();
