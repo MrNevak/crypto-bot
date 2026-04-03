@@ -5,6 +5,9 @@ let selectedToken = 'ETH';
 let selectedDays = 7;
 let chart = null;
 let currentDailyData = null;
+let animationFrame = null;
+let animationStartTime = null;
+let animationDuration = 4000;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
@@ -13,6 +16,33 @@ function formatDate(dateStr) {
     const day = date.getDate();
     const month = date.toLocaleString('en-US', { month: 'short' });
     return `${day} ${month}`;
+}
+
+function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+}
+
+function animateChart(chart, targetData, startData, duration, startTime) {
+    const now = performance.now();
+    const elapsed = now - startTime;
+    let progress = Math.min(1, elapsed / duration);
+    progress = easeOutCubic(progress);
+    
+    const currentData = startData.map((start, i) => {
+        const target = targetData[i];
+        return start + (target - start) * progress;
+    });
+    
+    chart.data.datasets[0].data = currentData;
+    chart.update('none');
+    
+    if (progress < 1) {
+        animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, startTime));
+    } else {
+        chart.data.datasets[0].data = targetData;
+        chart.update('none');
+        animationFrame = null;
+    }
 }
 
 document.querySelectorAll('.token-btn').forEach(btn => {
@@ -66,6 +96,10 @@ document.getElementById('showChartBtn').addEventListener('click', () => {
 });
 
 document.getElementById('backBtn').addEventListener('click', () => {
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
     document.getElementById('chartModal').classList.add('hidden');
 });
 
@@ -118,8 +152,13 @@ function showChartModal(dailyData) {
         }
         return formatDate(d.date);
     });
-    const realCounts = dailyData.map(d => d.count);
-    const zeroCounts = new Array(realCounts.length).fill(0);
+    const targetData = dailyData.map(d => d.count);
+    const startData = new Array(targetData.length).fill(0);
+    
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+        animationFrame = null;
+    }
     
     if (chart) {
         chart.destroy();
@@ -131,7 +170,7 @@ function showChartModal(dailyData) {
             labels: labels,
             datasets: [{
                 label: 'Transactions',
-                data: zeroCounts,
+                data: startData,
                 borderColor: '#D4C4A8',
                 backgroundColor: 'rgba(212, 196, 168, 0.05)',
                 borderWidth: 3,
@@ -147,9 +186,7 @@ function showChartModal(dailyData) {
         options: {
             responsive: true,
             maintainAspectRatio: true,
-            animation: {
-                duration: 0
-            },
+            animation: false,
             plugins: {
                 legend: {
                     display: false
@@ -206,11 +243,6 @@ function showChartModal(dailyData) {
     
     document.getElementById('chartModal').classList.remove('hidden');
     
-    setTimeout(() => {
-        chart.data.datasets[0].data = realCounts;
-        chart.update({
-            duration: 20000,
-            easing: 'easeOutQuart'
-        });
-    }, 100);
+    animationStartTime = performance.now();
+    animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, animationDuration, animationStartTime));
 }
