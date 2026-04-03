@@ -1,6 +1,22 @@
 let tg = window.Telegram.WebApp;
 tg.expand();
 
+// Ждем загрузку DOM
+document.addEventListener('DOMContentLoaded', function() {
+    // Находим кнопку
+    const startBtn = document.getElementById('startWorkBtn');
+    
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            alert('Button clicked!'); // Для проверки
+            showOptionsScreen();
+        });
+    } else {
+        console.log('Button not found! Check ID');
+    }
+});
+
+
 let selectedCoin = null;
 let selectedNetwork = null;
 let selectedDays = 30;
@@ -484,5 +500,7 @@ function showChartModal(dailyData) {
     }, 100);
 }
 
-// Start with welcome screen
-showWelcome();
+// Показываем welcome screen после загрузки
+window.onload = function() {
+    showWelcome();
+};
