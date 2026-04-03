@@ -20,41 +20,71 @@
             </div>
         </div>
 
+        <!-- OPTIONS SCREEN (LAUNCHER) -->
+        <div id="optionsScreen" class="hidden">
+            <div class="header">
+                <h1 class="options-title">Options</h1>
+                <p class="subtitle">Choose what you want to do</p>
+            </div>
+
+            <div class="launcher-cards">
+                <div class="launcher-card" id="analyzeWalletCard">
+                    <div class="card-icon">📊</div>
+                    <h2>Analyze Wallet</h2>
+                    <p>Check balance, transactions and get insights</p>
+                    <div class="card-glow"></div>
+                </div>
+
+                <div class="launcher-card disabled" id="portfolioCard">
+                    <div class="card-icon">📈</div>
+                    <h2>Portfolio Tracker</h2>
+                    <p>Coming soon</p>
+                    <div class="soon-badge">Soon</div>
+                    <div class="card-glow"></div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p>Data provided by Blockchain APIs</p>
+            </div>
+        </div>
+
         <!-- COIN SELECTION SCREEN -->
         <div id="coinScreen" class="hidden">
             <div class="header">
+                <button id="backToOptions" class="back-text-main">← Back</button>
                 <h1 class="options-title">Select Coin</h1>
                 <p class="subtitle">Choose cryptocurrency to analyze</p>
             </div>
 
             <div class="coins-grid">
                 <div class="coin-card" data-coin="BTC">
-                    <div class="coin-icon">₿</div>
+                    <img src="icons/bitcoin-btc-logo.svg" class="coin-icon-img" alt="BTC">
                     <h3>Bitcoin</h3>
                     <p>BTC</p>
                 </div>
                 <div class="coin-card" data-coin="ETH">
-                    <div class="coin-icon">⟠</div>
+                    <img src="icons/ethereum-eth-logo.svg" class="coin-icon-img" alt="ETH">
                     <h3>Ethereum</h3>
                     <p>ETH</p>
                 </div>
                 <div class="coin-card" data-coin="USDT">
-                    <div class="coin-icon">₮</div>
+                    <img src="icons/tether-usdt-logo.svg" class="coin-icon-img" alt="USDT">
                     <h3>Tether</h3>
                     <p>USDT</p>
                 </div>
                 <div class="coin-card" data-coin="BNB">
-                    <div class="coin-icon">🟡</div>
+                    <img src="icons/bnb-bnb-logo.svg" class="coin-icon-img" alt="BNB">
                     <h3>BNB</h3>
                     <p>BNB</p>
                 </div>
                 <div class="coin-card" data-coin="SOL">
-                    <div class="coin-icon">◎</div>
+                    <img src="icons/solana-sol-logo.svg" class="coin-icon-img" alt="SOL">
                     <h3>Solana</h3>
                     <p>SOL</p>
                 </div>
                 <div class="coin-card" data-coin="TON">
-                    <div class="coin-icon">⍟</div>
+                    <img src="icons/toncoin-ton-logo.svg" class="coin-icon-img" alt="TON">
                     <h3>Toncoin</h3>
                     <p>TON</p>
                 </div>
@@ -73,9 +103,7 @@
                 <p class="subtitle" id="selectedCoinName"></p>
             </div>
 
-            <div id="networksList" class="networks-grid">
-                <!-- Networks will be added dynamically -->
-            </div>
+            <div id="networksList" class="networks-grid"></div>
 
             <div class="footer">
                 <p>Select network for analysis</p>
