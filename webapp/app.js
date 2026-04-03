@@ -230,9 +230,19 @@ document.getElementById('analyzeBtn').onclick = async () => {
         tg.showPopup({ title: 'Error', message: 'Failed to connect to server' });
     }
 };
-
 document.getElementById('showChartBtn').onclick = () => {
-    if (currentDailyData && !isAnimating) showChartModal(currentDailyData);
+    if (currentDailyData && currentDailyData.length > 0) {
+        showChartModal(currentDailyData);
+    } else {
+        // Тестовый график если нет данных
+        const canvas = document.getElementById('txChartModal');
+        if (canvas) {
+            new Chart(canvas, {
+                type: 'line',
+                data: { labels: ['No data'], datasets: [{ label: 'Transactions', data: [0] }] }
+            });
+            document.getElementById('chartModal').style.display = 'flex';
+        }
+    }
 };
-
 showWelcome();
