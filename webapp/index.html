@@ -34,7 +34,8 @@
             <div class="input-group">
                 <input type="text" id="walletAddress" placeholder="Enter wallet address (0x...)" autocomplete="off">
                 <button id="analyzeBtn" class="analyze-btn">🔍 Analyze</button>
-    <button id="showChartBtn" class="analyze-btn hidden" style="margin-top: 8px; background: #2a2a2a;">📊 Show Chart</button>
+                <button id="showChartBtn" class="analyze-btn hidden" style="margin-top: 8px; background: #2a2a2a;">📊 Show Chart</button>
+            </div>
         </div>
 
         <div id="loading" class="loading hidden">
@@ -82,10 +83,6 @@
                     <div id="topReceivers" class="top-list">—</div>
                 </div>
             </div>
-
-            <div id="chartContainer" class="chart-container hidden">
-                <canvas id="txChart"></canvas>
-            </div>
         </div>
 
         <div class="footer">
@@ -93,19 +90,20 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="app.js"></script>
-<!-- Модальное окно для графика -->
-<div id="chartModal" class="modal hidden">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>📈 Transaction History</h3>
-            <button id="closeModalBtn" class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <canvas id="txChartModal"></canvas>
+    <!-- Модальное окно для графика -->
+    <div id="chartModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>📈 Transaction History</h3>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <canvas id="txChartModal"></canvas>
+            </div>
         </div>
     </div>
-</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
