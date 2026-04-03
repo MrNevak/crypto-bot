@@ -140,7 +140,18 @@ function showMainScreen() {
 }
 
 function displayResults(data) {
+    // Баланс в выбранной валюте
     document.getElementById('balance').innerHTML = `${data.balance} ${selectedCoin}`;
+    
+    // Конвертация в USDT (если есть данные)
+    const usdEl = document.getElementById('balanceUsd');
+    if (usdEl && data.balanceUsd !== undefined && data.balanceUsd > 0) {
+        usdEl.innerHTML = `≈ $${data.balanceUsd} USD`;
+        usdEl.style.display = 'block';
+    } else if (usdEl) {
+        usdEl.style.display = 'none';
+    }
+    
     document.getElementById('txCount').innerHTML = data.txCount;
     document.getElementById('incoming').innerHTML = `${data.incoming} ${selectedCoin}`;
     document.getElementById('outgoing').innerHTML = `${data.outgoing} ${selectedCoin}`;
