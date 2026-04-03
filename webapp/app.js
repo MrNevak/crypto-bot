@@ -126,13 +126,13 @@ function showChartModal(dailyData) {
             datasets: [{
                 label: 'Transactions per day',
                 data: zeroCounts,
-                borderColor: '#3390ec',
-                backgroundColor: 'rgba(51, 144, 236, 0.1)',
+                borderColor: '#f5a623',
+                backgroundColor: 'rgba(245, 166, 35, 0.1)',
                 borderWidth: 2,
                 pointRadius: 4,
                 pointHoverRadius: 6,
-                pointBackgroundColor: '#3390ec',
-                pointBorderColor: '#ffffff',
+                pointBackgroundColor: '#f5a623',
+                pointBorderColor: '#0a0a0a',
                 pointBorderWidth: 2,
                 tension: 0.3,
                 fill: true
@@ -150,7 +150,7 @@ function showChartModal(dailyData) {
                 },
                 tooltip: {
                     backgroundColor: '#1a1a1a',
-                    titleColor: '#fff',
+                    titleColor: '#f5a623',
                     bodyColor: '#aaa',
                     callbacks: {
                         label: function(context) {
