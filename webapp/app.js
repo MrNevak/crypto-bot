@@ -8,6 +8,13 @@ let currentDailyData = null;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
+function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'short' });
+    return `${day} ${month}`;
+}
+
 document.querySelectorAll('.token-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
@@ -105,7 +112,12 @@ function showChartModal(dailyData) {
         return;
     }
     
-    const labels = dailyData.map(d => d.date);
+    const labels = dailyData.map(d => {
+        if (d.date.includes('Week')) {
+            return d.date;
+        }
+        return formatDate(d.date);
+    });
     const realCounts = dailyData.map(d => d.count);
     const zeroCounts = new Array(realCounts.length).fill(0);
     
@@ -197,7 +209,7 @@ function showChartModal(dailyData) {
     setTimeout(() => {
         chart.data.datasets[0].data = realCounts;
         chart.update({
-            duration: 7000,
+            duration: 20000,
             easing: 'easeOutQuart'
         });
     }, 100);
