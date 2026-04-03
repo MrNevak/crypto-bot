@@ -41,13 +41,12 @@ USDT_CONTRACTS = {
 # 3. ФУНКЦИИ ДЛЯ РАБОТЫ С EVM СЕТЯМИ
 # ==========================================
 def get_evm_balance(address, chain, contract=None):
-    """Get balance for EVM chains (Ethereum, BSC, Polygon, Arbitrum, Optimism)"""
     explorers = {
-        "ethereum": {"url": "https://api.etherscan.io/v2/api", "api_key": ETHERSCAN_API_KEY},
-        "bsc": {"url": "https://api.bscscan.com/v2/api", "api_key": BSCSCAN_API_KEY},
-        "polygon": {"url": "https://api.polygonscan.com/v2/api", "api_key": POLYGONSCAN_API_KEY},
-        "arbitrum": {"url": "https://api.arbiscan.io/v2/api", "api_key": ARBISCAN_API_KEY},
-        "optimism": {"url": "https://api-optimistic.etherscan.io/v2/api", "api_key": OPTIMISMSCAN_API_KEY}
+        "ethereum": {"url": "https://api.etherscan.io/api", "api_key": ETHERSCAN_API_KEY},
+        "bsc": {"url": "https://api.bscscan.com/api", "api_key": BSCSCAN_API_KEY},
+        "polygon": {"url": "https://api.polygonscan.com/api", "api_key": POLYGONSCAN_API_KEY},
+        "arbitrum": {"url": "https://api.arbiscan.io/api", "api_key": ARBISCAN_API_KEY},
+        "optimism": {"url": "https://api-optimistic.etherscan.io/api", "api_key": OPTIMISMSCAN_API_KEY}
     }
     
     explorer = explorers.get(chain)
@@ -55,7 +54,6 @@ def get_evm_balance(address, chain, contract=None):
         return 0
     
     if contract:
-        # Token balance
         params = {
             "module": "account",
             "action": "tokenbalance",
@@ -64,12 +62,7 @@ def get_evm_balance(address, chain, contract=None):
             "tag": "latest",
             "apikey": explorer["api_key"]
         }
-        resp = requests.get(explorer["url"], params=params)
-        data = resp.json()
-        if data.get("status") == "1":
-            return int(data["result"]) / 10**18
     else:
-        # Native coin balance
         params = {
             "module": "account",
             "action": "balance",
@@ -77,10 +70,12 @@ def get_evm_balance(address, chain, contract=None):
             "tag": "latest",
             "apikey": explorer["api_key"]
         }
-        resp = requests.get(explorer["url"], params=params)
-        data = resp.json()
-        if data.get("status") == "1":
-            return int(data["result"]) / 10**18
+    
+    resp = requests.get(explorer["url"], params=params)
+    data = resp.json()
+    
+    if data.get("status") == "1":
+        return int(data["result"]) / 10**18
     return 0
 
 def get_evm_transactions(address, chain, days=30, contract=None):
