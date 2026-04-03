@@ -657,6 +657,47 @@ body {
     color: #0a0a0a;
 }
 
+/* Network icon images */
+.network-icon-img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    margin-right: 16px;
+}
+
+.network-card {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px;
+    background: #1a1a1a;
+    border-radius: 16px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    transition: all 0.3s;
+}
+
+.network-card:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(212, 196, 168, 0.2);
+}
+
+.network-icon {
+    font-size: 32px;
+    margin-right: 16px;
+}
+
+.network-info h4 {
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: #fff;
+}
+
+.network-info p {
+    font-size: 12px;
+    color: #888;
+}
+
 /* ========== МОДАЛЬНОЕ ОКНО ========== */
 .modal {
     position: fixed;
