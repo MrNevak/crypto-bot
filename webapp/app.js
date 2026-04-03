@@ -12,38 +12,38 @@ let animationDuration = 4000;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
-// Network configurations - ALL NETWORKS
+// Network configurations with image icons
 const networks = {
-    BTC: [{ id: "bitcoin", name: "Bitcoin", icon: "₿", description: "Bitcoin Mainnet" }],
+    BTC: [{ id: "bitcoin", name: "Bitcoin", icon: "icons/bitcoin-btc-logo.svg", description: "Bitcoin Mainnet" }],
     
     ETH: [
-        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
-        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum One" },
-        { id: "optimism", name: "Optimism", icon: "✨", description: "OP Mainnet" },
-        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" },
-        { id: "base", name: "Base", icon: "🔵", description: "Base Chain" },
-        { id: "avalanche", name: "Avalanche", icon: "🔺", description: "AVAX C-Chain" }
+        { id: "ethereum", name: "Ethereum", icon: "icons/ethereum-eth-logo.svg", description: "ERC-20" },
+        { id: "arbitrum", name: "Arbitrum", icon: "icons/arbitrum-arb-logo.svg", description: "Arbitrum One" },
+        { id: "optimism", name: "Optimism", icon: "icons/optimism-ethereum-op-logo.svg", description: "OP Mainnet" },
+        { id: "polygon", name: "Polygon", icon: "icons/polygon-matic-logo.svg", description: "MATIC" },
+        { id: "base", name: "Base", icon: "icons/base-logo-in-blue.svg", description: "Base Chain" },
+        { id: "avalanche", name: "Avalanche", icon: "icons/avalanche-avax-logo.svg", description: "AVAX C-Chain" }
     ],
     
     USDT: [
-        { id: "ethereum", name: "Ethereum", icon: "⟠", description: "ERC-20" },
-        { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BEP-20" },
-        { id: "polygon", name: "Polygon", icon: "🟣", description: "MATIC" },
-        { id: "arbitrum", name: "Arbitrum", icon: "🔷", description: "Arbitrum" },
-        { id: "optimism", name: "Optimism", icon: "✨", description: "Optimism" },
-        { id: "avalanche", name: "Avalanche", icon: "🔺", description: "AVAX" }
+        { id: "ethereum", name: "Ethereum", icon: "icons/ethereum-eth-logo.svg", description: "ERC-20" },
+        { id: "bsc", name: "BNB Chain", icon: "icons/bnb-bnb-logo.svg", description: "BEP-20" },
+        { id: "polygon", name: "Polygon", icon: "icons/polygon-matic-logo.svg", description: "MATIC" },
+        { id: "arbitrum", name: "Arbitrum", icon: "icons/arbitrum-arb-logo.svg", description: "Arbitrum" },
+        { id: "optimism", name: "Optimism", icon: "icons/optimism-ethereum-op-logo.svg", description: "Optimism" },
+        { id: "avalanche", name: "Avalanche", icon: "icons/avalanche-avax-logo.svg", description: "AVAX" }
     ],
     
     BNB: [
-        { id: "bsc", name: "BNB Chain", icon: "🟡", description: "BSC Mainnet" }
+        { id: "bsc", name: "BNB Chain", icon: "icons/bnb-bnb-logo.svg", description: "BSC Mainnet" }
     ],
     
     SOL: [
-        { id: "solana", name: "Solana", icon: "◎", description: "Solana Mainnet" }
+        { id: "solana", name: "Solana", icon: "icons/solana-sol-logo.svg", description: "Solana Mainnet" }
     ],
     
     TON: [
-        { id: "ton", name: "TON", icon: "⍟", description: "TON Mainnet" }
+        { id: "ton", name: "TON", icon: "icons/toncoin-ton-logo.svg", description: "TON Mainnet" }
     ]
 };
 
@@ -101,27 +101,45 @@ function startAnimation(chart, targetData, startData, duration) {
 
 // Screen navigation
 function showWelcome() {
-    document.getElementById('welcomeScreen').style.display = 'flex';
-    document.getElementById('optionsScreen').style.display = 'none';
-    document.getElementById('coinScreen').style.display = 'none';
-    document.getElementById('networkScreen').style.display = 'none';
-    document.getElementById('mainScreen').style.display = 'none';
+    const welcome = document.getElementById('welcomeScreen');
+    const options = document.getElementById('optionsScreen');
+    const coin = document.getElementById('coinScreen');
+    const network = document.getElementById('networkScreen');
+    const main = document.getElementById('mainScreen');
+    
+    if (welcome) welcome.style.display = 'flex';
+    if (options) options.style.display = 'none';
+    if (coin) coin.style.display = 'none';
+    if (network) network.style.display = 'none';
+    if (main) main.style.display = 'none';
 }
 
 function showOptionsScreen() {
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('optionsScreen').style.display = 'block';
-    document.getElementById('coinScreen').style.display = 'none';
-    document.getElementById('networkScreen').style.display = 'none';
-    document.getElementById('mainScreen').style.display = 'none';
+    const welcome = document.getElementById('welcomeScreen');
+    const options = document.getElementById('optionsScreen');
+    const coin = document.getElementById('coinScreen');
+    const network = document.getElementById('networkScreen');
+    const main = document.getElementById('mainScreen');
+    
+    if (welcome) welcome.style.display = 'none';
+    if (options) options.style.display = 'block';
+    if (coin) coin.style.display = 'none';
+    if (network) network.style.display = 'none';
+    if (main) main.style.display = 'none';
 }
 
 function showCoinScreen() {
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('optionsScreen').style.display = 'none';
-    document.getElementById('coinScreen').style.display = 'block';
-    document.getElementById('networkScreen').style.display = 'none';
-    document.getElementById('mainScreen').style.display = 'none';
+    const welcome = document.getElementById('welcomeScreen');
+    const options = document.getElementById('optionsScreen');
+    const coin = document.getElementById('coinScreen');
+    const network = document.getElementById('networkScreen');
+    const main = document.getElementById('mainScreen');
+    
+    if (welcome) welcome.style.display = 'none';
+    if (options) options.style.display = 'none';
+    if (coin) coin.style.display = 'block';
+    if (network) network.style.display = 'none';
+    if (main) main.style.display = 'none';
 }
 
 function showNetworkScreen(coin) {
@@ -135,8 +153,12 @@ function showNetworkScreen(coin) {
     coinNetworks.forEach(net => {
         const div = document.createElement('div');
         div.className = 'network-card';
+        
+        // Use image icon for all networks
+        const iconHtml = `<img src="${net.icon}" class="network-icon-img" alt="${net.name}" onerror="this.src='https://placehold.co/32x32?text=${net.icon.charAt(0)}'">`;
+        
         div.innerHTML = `
-            <div class="network-icon">${net.icon}</div>
+            ${iconHtml}
             <div class="network-info">
                 <h4>${net.name}</h4>
                 <p>${net.description}</p>
@@ -149,11 +171,17 @@ function showNetworkScreen(coin) {
         networksList.appendChild(div);
     });
     
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('optionsScreen').style.display = 'none';
-    document.getElementById('coinScreen').style.display = 'none';
-    document.getElementById('networkScreen').style.display = 'block';
-    document.getElementById('mainScreen').style.display = 'none';
+    const welcome = document.getElementById('welcomeScreen');
+    const options = document.getElementById('optionsScreen');
+    const coinScreen = document.getElementById('coinScreen');
+    const networkScreen = document.getElementById('networkScreen');
+    const main = document.getElementById('mainScreen');
+    
+    if (welcome) welcome.style.display = 'none';
+    if (options) options.style.display = 'none';
+    if (coinScreen) coinScreen.style.display = 'none';
+    if (networkScreen) networkScreen.style.display = 'block';
+    if (main) main.style.display = 'none';
 }
 
 function showMainScreen() {
@@ -161,11 +189,17 @@ function showMainScreen() {
     document.getElementById('analysisSubtitle').textContent = `Network: ${selectedNetwork.toUpperCase()}`;
     document.getElementById('walletAddress').placeholder = getPlaceholder();
     
-    document.getElementById('welcomeScreen').style.display = 'none';
-    document.getElementById('optionsScreen').style.display = 'none';
-    document.getElementById('coinScreen').style.display = 'none';
-    document.getElementById('networkScreen').style.display = 'none';
-    document.getElementById('mainScreen').style.display = 'block';
+    const welcome = document.getElementById('welcomeScreen');
+    const options = document.getElementById('optionsScreen');
+    const coin = document.getElementById('coinScreen');
+    const network = document.getElementById('networkScreen');
+    const main = document.getElementById('mainScreen');
+    
+    if (welcome) welcome.style.display = 'none';
+    if (options) options.style.display = 'none';
+    if (coin) coin.style.display = 'none';
+    if (network) network.style.display = 'none';
+    if (main) main.style.display = 'block';
     
     document.getElementById('walletAddress').value = '';
     document.getElementById('results').style.display = 'none';
@@ -290,8 +324,7 @@ function showChartModal(dailyData) {
     const targetData = dailyData.map(d => d.count);
     const startData = new Array(targetData.length).fill(0);
     
-    // Находим максимальное значение для фиксации оси Y
-    const maxValue = Math.max(...targetData, 1); // минимум 1, чтобы ось не схлопнулась
+    const maxValue = Math.max(...targetData, 1);
     
     if (chart) {
         chart.destroy();
@@ -334,7 +367,7 @@ function showChartModal(dailyData) {
             scales: {
                 y: { 
                     beginAtZero: true,
-                    max: maxValue,  // ФИКСИРУЕМ МАКСИМУМ
+                    max: maxValue,
                     grid: { color: 'rgba(212, 196, 168, 0.1)' }, 
                     ticks: { color: '#aaa', stepSize: Math.ceil(maxValue / 5) || 1 }
                 },
@@ -354,6 +387,6 @@ function showChartModal(dailyData) {
         }
     }, 100);
 }
-    
+
 // Start with welcome screen
 showWelcome();
