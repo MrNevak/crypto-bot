@@ -9,8 +9,19 @@
 </head>
 <body>
     <div class="container" id="app">
-        <!-- НАЧАЛЬНЫЙ ЭКРАН -->
-        <div id="startScreen">
+        <!-- ПРИВЕТСТВЕННЫЙ ЭКРАН (WELCOME) -->
+        <div id="welcomeScreen">
+            <div class="welcome-content">
+                <div class="welcome-logo-area">
+                    <img src="icons/NALogo.jpg" class="welcome-logo" alt="Nauma Assistant">
+                    <h1 class="welcome-title">Nauma Assistant</h1>
+                </div>
+                <button id="startWorkBtn" class="start-work-btn">Начать работу</button>
+            </div>
+        </div>
+
+        <!-- СТАРТОВЫЙ ЭКРАН (LAUNCHER) -->
+        <div id="startScreen" class="hidden">
             <div class="header">
                 <div class="logo-area">
                     <img src="icons/NALogo.jpg" class="logo" alt="Nauma Assistant">
@@ -41,14 +52,11 @@
             </div>
         </div>
 
-        <!-- ОСНОВНОЙ ЭКРАН АНАЛИЗА -->
+        <!-- ЭКРАН АНАЛИЗА КОШЕЛЬКА -->
         <div id="mainScreen" class="hidden">
             <div class="header">
                 <button id="backToStart" class="back-text-main">← Back</button>
-                <div class="logo-area">
-                    <img src="icons/NALogo.jpg" class="logo" alt="Nauma Assistant">
-                    <h1>Nauma Assistant</h1>
-                </div>
+                <h2 class="section-title">Анализ кошелька</h2>
                 <p class="subtitle">Analyze ETH and USDT transactions</p>
             </div>
 
