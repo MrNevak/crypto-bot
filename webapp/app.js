@@ -8,6 +8,7 @@ let currentDailyData = null;
 let animationFrame = null;
 let animationStartTime = null;
 let animationDuration = 4000;
+let isAnimating = false;
 
 const API_URL = 'https://crypto-bot-production-d6b8.up.railway.app';
 
@@ -23,6 +24,8 @@ function easeOutCubic(t) {
 }
 
 function animateChart(chart, targetData, startData, duration, startTime) {
+    if (!isAnimating) return;
+    
     const now = performance.now();
     const elapsed = now - startTime;
     let progress = Math.min(1, elapsed / duration);
@@ -41,8 +44,24 @@ function animateChart(chart, targetData, startData, duration, startTime) {
     } else {
         chart.data.datasets[0].data = targetData;
         chart.update('none');
+        stopAnimation();
+    }
+}
+
+function stopAnimation() {
+    if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
         animationFrame = null;
     }
+    isAnimating = false;
+    animationStartTime = null;
+}
+
+function startAnimation(chart, targetData, startData, duration) {
+    stopAnimation();
+    isAnimating = true;
+    animationStartTime = performance.now();
+    animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, duration, animationStartTime));
 }
 
 document.querySelectorAll('.token-btn').forEach(btn => {
@@ -90,16 +109,13 @@ document.getElementById('analyzeBtn').addEventListener('click', async () => {
 });
 
 document.getElementById('showChartBtn').addEventListener('click', () => {
-    if (currentDailyData) {
+    if (currentDailyData && !isAnimating) {
         showChartModal(currentDailyData);
     }
 });
 
 document.getElementById('backBtn').addEventListener('click', () => {
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = null;
-    }
+    stopAnimation();
     document.getElementById('chartModal').classList.add('hidden');
 });
 
@@ -155,13 +171,9 @@ function showChartModal(dailyData) {
     const targetData = dailyData.map(d => d.count);
     const startData = new Array(targetData.length).fill(0);
     
-    if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-        animationFrame = null;
-    }
-    
     if (chart) {
         chart.destroy();
+        chart = null;
     }
     
     chart = new Chart(canvas, {
@@ -170,7 +182,7 @@ function showChartModal(dailyData) {
             labels: labels,
             datasets: [{
                 label: 'Transactions',
-                data: startData,
+                data: startData.slice(),
                 borderColor: '#D4C4A8',
                 backgroundColor: 'rgba(212, 196, 168, 0.05)',
                 borderWidth: 3,
@@ -243,6 +255,9 @@ function showChartModal(dailyData) {
     
     document.getElementById('chartModal').classList.remove('hidden');
     
-    animationStartTime = performance.now();
-    animationFrame = requestAnimationFrame(() => animateChart(chart, targetData, startData, animationDuration, animationStartTime));
+    setTimeout(() => {
+        if (chart && !isAnimating) {
+            startAnimation(chart, targetData, startData, animationDuration);
+        }
+    }, 50);
 }
