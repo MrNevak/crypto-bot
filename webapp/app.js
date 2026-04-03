@@ -132,12 +132,12 @@ function showChartModal(dailyData) {
             datasets: [{
                 label: 'Transactions',
                 data: zeroCounts,
-                borderColor: '#f5a623',
-                backgroundColor: 'rgba(245, 166, 35, 0.05)',
+                borderColor: '#D4C4A8',
+                backgroundColor: 'rgba(212, 196, 168, 0.05)',
                 borderWidth: 3,
                 pointRadius: 5,
                 pointHoverRadius: 8,
-                pointBackgroundColor: '#f5a623',
+                pointBackgroundColor: '#F0E1B9',
                 pointBorderColor: '#0a0a0a',
                 pointBorderWidth: 2,
                 tension: 0.4,
@@ -156,9 +156,9 @@ function showChartModal(dailyData) {
                 },
                 tooltip: {
                     backgroundColor: '#1a1a1a',
-                    titleColor: '#f5a623',
+                    titleColor: '#F0E1B9',
                     bodyColor: '#aaa',
-                    borderColor: '#f5a623',
+                    borderColor: '#D4C4A8',
                     borderWidth: 1,
                     callbacks: {
                         label: function(context) {
@@ -171,7 +171,7 @@ function showChartModal(dailyData) {
                 y: {
                     beginAtZero: true,
                     grid: { 
-                        color: 'rgba(245, 166, 35, 0.1)',
+                        color: 'rgba(212, 196, 168, 0.1)',
                         lineWidth: 1
                     },
                     ticks: { 
