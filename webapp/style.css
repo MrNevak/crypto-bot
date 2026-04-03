@@ -24,7 +24,7 @@ body {
 .header h1 {
     font-size: 24px;
     margin-bottom: 4px;
-    color: #f5a623;
+    color: #ffffff;
 }
 
 .subtitle {
@@ -49,23 +49,25 @@ body {
 .token-btn, .period-btn {
     flex: 1;
     padding: 12px;
-    border: none;
+    border: 2px solid #f5a623;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
     cursor: pointer;
-    background: #2a2a2a;
+    background: #1a1a1a;
     color: #ffffff;
     transition: all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .token-btn.active, .period-btn.active {
     background: #f5a623;
     color: #0a0a0a;
+    box-shadow: 0 0 15px rgba(245, 166, 35, 0.6);
 }
 
 .token-icon {
@@ -87,17 +89,18 @@ body {
 
 #walletAddress {
     padding: 14px;
-    border: 1px solid #2a2a2a;
+    border: 2px solid #f5a623;
     border-radius: 12px;
     font-size: 14px;
     background: #0a0a0a;
     color: #ffffff;
     font-family: monospace;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 #walletAddress:focus {
     outline: none;
-    border-color: #f5a623;
+    box-shadow: 0 0 15px rgba(245, 166, 35, 0.5);
 }
 
 #walletAddress::placeholder {
@@ -106,27 +109,30 @@ body {
 
 .analyze-btn {
     padding: 14px;
-    background: #f5a623;
-    color: #0a0a0a;
-    border: none;
+    background: #1a1a1a;
+    color: #ffffff;
+    border: 2px solid #f5a623;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .analyze-btn:hover {
-    background: #f7931a;
+    background: #2a2a2a;
+    box-shadow: 0 0 15px rgba(245, 166, 35, 0.5);
 }
 
 #showChartBtn {
-    background: #2a2a2a;
+    background: #1a1a1a;
     color: #ffffff;
+    border: 2px solid #f5a623;
 }
 
 #showChartBtn:hover {
-    background: #3a3a3a;
+    background: #2a2a2a;
 }
 
 .loading {
@@ -163,7 +169,8 @@ body {
     padding: 20px;
     text-align: center;
     margin-bottom: 20px;
-    border: 1px solid #f5a623;
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 10px rgba(245, 166, 35, 0.3);
 }
 
 .balance-card .label {
@@ -193,7 +200,8 @@ body {
     border-radius: 12px;
     padding: 16px;
     text-align: center;
-    border: 1px solid #2a2a2a;
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .stat-label {
@@ -217,14 +225,15 @@ body {
 }
 
 .insight-card {
-    background: rgba(245, 166, 35, 0.1);
+    background: rgba(26, 26, 26, 0.9);
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
     gap: 12px;
-    border: 1px solid #f5a623;
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .insight-icon {
@@ -242,7 +251,8 @@ body {
     background: #1a1a1a;
     border-radius: 12px;
     padding: 16px;
-    border: 1px solid #2a2a2a;
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 5px rgba(245, 166, 35, 0.3);
 }
 
 .top-card h3 {
@@ -267,7 +277,7 @@ body {
     padding: 16px;
 }
 
-/* Модальное окно - полноэкранное */
+/* Модальное окно - встроенное */
 .modal {
     position: fixed;
     top: 0;
@@ -331,13 +341,13 @@ body {
 }
 
 .chart-wrapper {
-    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+    background: #1a1a1a;
     border-radius: 24px;
     padding: 20px;
     width: 100%;
     height: auto;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(245, 166, 35, 0.2);
+    border: 2px solid #f5a623;
+    box-shadow: 0 0 15px rgba(245, 166, 35, 0.3);
 }
 
 .modal-body canvas {
