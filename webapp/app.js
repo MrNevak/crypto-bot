@@ -65,139 +65,191 @@ function startAnimation(chart, targetData, startData, duration) {
 
 // Переключение экранов
 function showWelcomeScreen() {
-    document.getElementById('welcomeScreen').classList.remove('hidden');
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('mainScreen').classList.add('hidden');
+    const welcome = document.getElementById('welcomeScreen');
+    const start = document.getElementById('startScreen');
+    const main = document.getElementById('mainScreen');
+    if (welcome) welcome.classList.remove('hidden');
+    if (start) start.classList.add('hidden');
+    if (main) main.classList.add('hidden');
 }
 
 function showStartScreen() {
-    document.getElementById('welcomeScreen').classList.add('hidden');
-    document.getElementById('startScreen').classList.remove('hidden');
-    document.getElementById('mainScreen').classList.add('hidden');
+    const welcome = document.getElementById('welcomeScreen');
+    const start = document.getElementById('startScreen');
+    const main = document.getElementById('mainScreen');
+    if (welcome) welcome.classList.add('hidden');
+    if (start) start.classList.remove('hidden');
+    if (main) main.classList.add('hidden');
 }
 
 function showMainScreen() {
-    document.getElementById('welcomeScreen').classList.add('hidden');
-    document.getElementById('startScreen').classList.add('hidden');
-    document.getElementById('mainScreen').classList.remove('hidden');
+    const welcome = document.getElementById('welcomeScreen');
+    const start = document.getElementById('startScreen');
+    const main = document.getElementById('mainScreen');
+    if (welcome) welcome.classList.add('hidden');
+    if (start) start.classList.add('hidden');
+    if (main) main.classList.remove('hidden');
 }
 
 // Обработчики
-document.getElementById('startWorkBtn').addEventListener('click', () => {
-    showStartScreen();
-});
+const startBtn = document.getElementById('startWorkBtn');
+if (startBtn) {
+    startBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        console.log('Button clicked');
+        showStartScreen();
+    });
+}
 
-document.getElementById('analyzeCard').addEventListener('click', () => {
-    showMainScreen();
-});
+const analyzeCard = document.getElementById('analyzeCard');
+if (analyzeCard) {
+    analyzeCard.addEventListener('click', () => {
+        showMainScreen();
+    });
+}
 
-document.getElementById('portfolioCard').addEventListener('click', () => {
-    tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
-});
+const portfolioCard = document.getElementById('portfolioCard');
+if (portfolioCard) {
+    portfolioCard.addEventListener('click', () => {
+        tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
+    });
+}
 
-document.getElementById('backToStart').addEventListener('click', () => {
-    showStartScreen();
-    document.getElementById('walletAddress').value = '';
-    document.getElementById('results').classList.add('hidden');
-    document.getElementById('showChartBtn').classList.add('hidden');
-    currentDailyData = null;
-});
+const backToStart = document.getElementById('backToStart');
+if (backToStart) {
+    backToStart.addEventListener('click', () => {
+        showStartScreen();
+        const walletInput = document.getElementById('walletAddress');
+        if (walletInput) walletInput.value = '';
+        const results = document.getElementById('results');
+        if (results) results.classList.add('hidden');
+        const chartBtn = document.getElementById('showChartBtn');
+        if (chartBtn) chartBtn.classList.add('hidden');
+        currentDailyData = null;
+    });
+}
 
-document.querySelectorAll('.token-btn').forEach(btn => {
+const tokenBtns = document.querySelectorAll('.token-btn');
+tokenBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
+        tokenBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedToken = btn.dataset.token;
     });
 });
 
-document.querySelectorAll('.period-btn').forEach(btn => {
+const periodBtns = document.querySelectorAll('.period-btn');
+periodBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+        periodBtns.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedDays = parseInt(btn.dataset.days);
     });
 });
 
-document.getElementById('analyzeBtn').addEventListener('click', async () => {
-    const address = document.getElementById('walletAddress').value.trim();
-    
-    if (!address || !address.startsWith('0x') || address.length !== 42) {
-        tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
-        return;
-    }
-    
-    document.getElementById('loading').classList.remove('hidden');
-    document.getElementById('results').classList.add('hidden');
-    document.getElementById('showChartBtn').classList.add('hidden');
-    
-    try {
-        const response = await fetch(`${API_URL}/analyze`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
-        });
+const analyzeBtn = document.getElementById('analyzeBtn');
+if (analyzeBtn) {
+    analyzeBtn.addEventListener('click', async () => {
+        const addressInput = document.getElementById('walletAddress');
+        const address = addressInput ? addressInput.value.trim() : '';
         
-        const data = await response.json();
-        document.getElementById('loading').classList.add('hidden');
-        displayResults(data);
-    } catch (error) {
-        document.getElementById('loading').classList.add('hidden');
-        tg.showPopup({ title: 'Error', message: 'Failed to connect to server', buttons: [{type: 'ok'}] });
-    }
-});
+        if (!address || !address.startsWith('0x') || address.length !== 42) {
+            tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
+            return;
+        }
+        
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const chartBtn = document.getElementById('showChartBtn');
+        
+        if (loading) loading.classList.remove('hidden');
+        if (results) results.classList.add('hidden');
+        if (chartBtn) chartBtn.classList.add('hidden');
+        
+        try {
+            const response = await fetch(`${API_URL}/analyze`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
+            });
+            
+            const data = await response.json();
+            if (loading) loading.classList.add('hidden');
+            displayResults(data);
+        } catch (error) {
+            if (loading) loading.classList.add('hidden');
+            tg.showPopup({ title: 'Error', message: 'Failed to connect to server', buttons: [{type: 'ok'}] });
+        }
+    });
+}
 
-document.getElementById('showChartBtn').addEventListener('click', () => {
-    if (currentDailyData && !isAnimating) {
-        showChartModal(currentDailyData);
-    }
-});
+const showChartBtn = document.getElementById('showChartBtn');
+if (showChartBtn) {
+    showChartBtn.addEventListener('click', () => {
+        if (currentDailyData && !isAnimating) {
+            showChartModal(currentDailyData);
+        }
+    });
+}
 
-document.getElementById('backBtn').addEventListener('click', () => {
-    stopAnimation();
-    document.getElementById('chartModal').classList.add('hidden');
-});
+const backBtn = document.getElementById('backBtn');
+if (backBtn) {
+    backBtn.addEventListener('click', () => {
+        stopAnimation();
+        const modal = document.getElementById('chartModal');
+        if (modal) modal.classList.add('hidden');
+    });
+}
 
 function displayResults(data) {
-    document.getElementById('balance').textContent = `${data.balance} ${selectedToken}`;
-    document.getElementById('txCount').textContent = data.txCount;
-    document.getElementById('incoming').textContent = `${data.incoming} ${selectedToken}`;
-    document.getElementById('outgoing').textContent = `${data.outgoing} ${selectedToken}`;
-    document.getElementById('insight').textContent = data.insight;
-    document.getElementById('gasFees').textContent = `0 ETH`;
+    const balanceEl = document.getElementById('balance');
+    const txCountEl = document.getElementById('txCount');
+    const incomingEl = document.getElementById('incoming');
+    const outgoingEl = document.getElementById('outgoing');
+    const insightEl = document.getElementById('insight');
+    const topSendersEl = document.getElementById('topSenders');
+    const topReceiversEl = document.getElementById('topReceivers');
+    const resultsEl = document.getElementById('results');
+    const chartBtn = document.getElementById('showChartBtn');
     
-    if (data.topSenders && data.topSenders.length > 0) {
-        document.getElementById('topSenders').innerHTML = data.topSenders.map(([addr, val]) => 
+    if (balanceEl) balanceEl.textContent = `${data.balance} ${selectedToken}`;
+    if (txCountEl) txCountEl.textContent = data.txCount;
+    if (incomingEl) incomingEl.textContent = `${data.incoming} ${selectedToken}`;
+    if (outgoingEl) outgoingEl.textContent = `${data.outgoing} ${selectedToken}`;
+    if (insightEl) insightEl.textContent = data.insight;
+    
+    if (data.topSenders && data.topSenders.length > 0 && topSendersEl) {
+        topSendersEl.innerHTML = data.topSenders.map(([addr, val]) => 
             `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
         ).join('');
-    } else {
-        document.getElementById('topSenders').innerHTML = 'no data';
+    } else if (topSendersEl) {
+        topSendersEl.innerHTML = 'no data';
     }
     
-    if (data.topReceivers && data.topReceivers.length > 0) {
-        document.getElementById('topReceivers').innerHTML = data.topReceivers.map(([addr, val]) => 
+    if (data.topReceivers && data.topReceivers.length > 0 && topReceiversEl) {
+        topReceiversEl.innerHTML = data.topReceivers.map(([addr, val]) => 
             `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
         ).join('');
-    } else {
-        document.getElementById('topReceivers').innerHTML = 'no data';
+    } else if (topReceiversEl) {
+        topReceiversEl.innerHTML = 'no data';
     }
     
     currentDailyData = data.dailyData;
     
-    if (currentDailyData && currentDailyData.length > 0) {
-        document.getElementById('showChartBtn').classList.remove('hidden');
-    } else {
-        document.getElementById('showChartBtn').classList.add('hidden');
+    if (currentDailyData && currentDailyData.length > 0 && chartBtn) {
+        chartBtn.classList.remove('hidden');
+    } else if (chartBtn) {
+        chartBtn.classList.add('hidden');
     }
     
-    document.getElementById('results').classList.remove('hidden');
+    if (resultsEl) resultsEl.classList.remove('hidden');
     tg.ready();
 }
 
 function showChartModal(dailyData) {
     const canvas = document.getElementById('txChartModal');
     
-    if (!dailyData || dailyData.length === 0) {
+    if (!canvas || !dailyData || dailyData.length === 0) {
         return;
     }
     
@@ -292,7 +344,8 @@ function showChartModal(dailyData) {
         }
     });
     
-    document.getElementById('chartModal').classList.remove('hidden');
+    const modal = document.getElementById('chartModal');
+    if (modal) modal.classList.remove('hidden');
     
     setTimeout(() => {
         if (chart && !isAnimating) {
