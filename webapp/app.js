@@ -65,191 +65,147 @@ function startAnimation(chart, targetData, startData, duration) {
 
 // Переключение экранов
 function showWelcomeScreen() {
-    const welcome = document.getElementById('welcomeScreen');
-    const start = document.getElementById('startScreen');
-    const main = document.getElementById('mainScreen');
-    if (welcome) welcome.classList.remove('hidden');
-    if (start) start.classList.add('hidden');
-    if (main) main.classList.add('hidden');
+    document.getElementById('welcomeScreen').style.display = 'flex';
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showStartScreen() {
-    const welcome = document.getElementById('welcomeScreen');
-    const start = document.getElementById('startScreen');
-    const main = document.getElementById('mainScreen');
-    if (welcome) welcome.classList.add('hidden');
-    if (start) start.classList.remove('hidden');
-    if (main) main.classList.add('hidden');
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('startScreen').style.display = 'block';
+    document.getElementById('mainScreen').style.display = 'none';
 }
 
 function showMainScreen() {
-    const welcome = document.getElementById('welcomeScreen');
-    const start = document.getElementById('startScreen');
-    const main = document.getElementById('mainScreen');
-    if (welcome) welcome.classList.add('hidden');
-    if (start) start.classList.add('hidden');
-    if (main) main.classList.remove('hidden');
+    document.getElementById('welcomeScreen').style.display = 'none';
+    document.getElementById('startScreen').style.display = 'none';
+    document.getElementById('mainScreen').style.display = 'block';
 }
 
-// Обработчики
-const startBtn = document.getElementById('startWorkBtn');
-if (startBtn) {
-    startBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Button clicked');
-        showStartScreen();
-    });
-}
+// КНОПКА START WORK
+document.getElementById('startWorkBtn').onclick = function() {
+    showStartScreen();
+};
 
-const analyzeCard = document.getElementById('analyzeCard');
-if (analyzeCard) {
-    analyzeCard.addEventListener('click', () => {
-        showMainScreen();
-    });
-}
+// КНОПКА ANALYZE WALLET
+document.getElementById('analyzeCard').onclick = function() {
+    showMainScreen();
+};
 
-const portfolioCard = document.getElementById('portfolioCard');
-if (portfolioCard) {
-    portfolioCard.addEventListener('click', () => {
-        tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
-    });
-}
+// КНОПКА BACK НА СТАРТОВЫЙ ЭКРАН
+document.getElementById('backToStart').onclick = function() {
+    showStartScreen();
+    document.getElementById('walletAddress').value = '';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('showChartBtn').style.display = 'none';
+    currentDailyData = null;
+};
 
-const backToStart = document.getElementById('backToStart');
-if (backToStart) {
-    backToStart.addEventListener('click', () => {
-        showStartScreen();
-        const walletInput = document.getElementById('walletAddress');
-        if (walletInput) walletInput.value = '';
-        const results = document.getElementById('results');
-        if (results) results.classList.add('hidden');
-        const chartBtn = document.getElementById('showChartBtn');
-        if (chartBtn) chartBtn.classList.add('hidden');
-        currentDailyData = null;
-    });
-}
+// Portfolio Tracker
+document.getElementById('portfolioCard').onclick = function() {
+    tg.showPopup({ title: 'Coming Soon', message: 'Portfolio Tracker will be available soon!', buttons: [{type: 'ok'}] });
+};
 
-const tokenBtns = document.querySelectorAll('.token-btn');
-tokenBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        tokenBtns.forEach(b => b.classList.remove('active'));
+// Token buttons
+document.querySelectorAll('.token-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.token-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedToken = btn.dataset.token;
-    });
+    };
 });
 
-const periodBtns = document.querySelectorAll('.period-btn');
-periodBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-        periodBtns.forEach(b => b.classList.remove('active'));
+// Period buttons
+document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.onclick = () => {
+        document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         selectedDays = parseInt(btn.dataset.days);
-    });
+    };
 });
 
-const analyzeBtn = document.getElementById('analyzeBtn');
-if (analyzeBtn) {
-    analyzeBtn.addEventListener('click', async () => {
-        const addressInput = document.getElementById('walletAddress');
-        const address = addressInput ? addressInput.value.trim() : '';
-        
-        if (!address || !address.startsWith('0x') || address.length !== 42) {
-            tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
-            return;
-        }
-        
-        const loading = document.getElementById('loading');
-        const results = document.getElementById('results');
-        const chartBtn = document.getElementById('showChartBtn');
-        
-        if (loading) loading.classList.remove('hidden');
-        if (results) results.classList.add('hidden');
-        if (chartBtn) chartBtn.classList.add('hidden');
-        
-        try {
-            const response = await fetch(`${API_URL}/analyze`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
-            });
-            
-            const data = await response.json();
-            if (loading) loading.classList.add('hidden');
-            displayResults(data);
-        } catch (error) {
-            if (loading) loading.classList.add('hidden');
-            tg.showPopup({ title: 'Error', message: 'Failed to connect to server', buttons: [{type: 'ok'}] });
-        }
-    });
-}
-
-const showChartBtn = document.getElementById('showChartBtn');
-if (showChartBtn) {
-    showChartBtn.addEventListener('click', () => {
-        if (currentDailyData && !isAnimating) {
-            showChartModal(currentDailyData);
-        }
-    });
-}
-
-const backBtn = document.getElementById('backBtn');
-if (backBtn) {
-    backBtn.addEventListener('click', () => {
-        stopAnimation();
-        const modal = document.getElementById('chartModal');
-        if (modal) modal.classList.add('hidden');
-    });
-}
-
-function displayResults(data) {
-    const balanceEl = document.getElementById('balance');
-    const txCountEl = document.getElementById('txCount');
-    const incomingEl = document.getElementById('incoming');
-    const outgoingEl = document.getElementById('outgoing');
-    const insightEl = document.getElementById('insight');
-    const topSendersEl = document.getElementById('topSenders');
-    const topReceiversEl = document.getElementById('topReceivers');
-    const resultsEl = document.getElementById('results');
-    const chartBtn = document.getElementById('showChartBtn');
+// Analyze button
+document.getElementById('analyzeBtn').onclick = async () => {
+    const address = document.getElementById('walletAddress').value.trim();
     
-    if (balanceEl) balanceEl.textContent = `${data.balance} ${selectedToken}`;
-    if (txCountEl) txCountEl.textContent = data.txCount;
-    if (incomingEl) incomingEl.textContent = `${data.incoming} ${selectedToken}`;
-    if (outgoingEl) outgoingEl.textContent = `${data.outgoing} ${selectedToken}`;
-    if (insightEl) insightEl.textContent = data.insight;
-    
-    if (data.topSenders && data.topSenders.length > 0 && topSendersEl) {
-        topSendersEl.innerHTML = data.topSenders.map(([addr, val]) => 
-            `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
-        ).join('');
-    } else if (topSendersEl) {
-        topSendersEl.innerHTML = 'no data';
+    if (!address || !address.startsWith('0x') || address.length !== 42) {
+        tg.showPopup({ title: 'Error', message: 'Enter a valid wallet address (0x...)', buttons: [{type: 'ok'}] });
+        return;
     }
     
-    if (data.topReceivers && data.topReceivers.length > 0 && topReceiversEl) {
-        topReceiversEl.innerHTML = data.topReceivers.map(([addr, val]) => 
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('showChartBtn').style.display = 'none';
+    
+    try {
+        const response = await fetch(`${API_URL}/analyze`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ address, token: selectedToken, days: selectedDays })
+        });
+        
+        const data = await response.json();
+        document.getElementById('loading').style.display = 'none';
+        displayResults(data);
+    } catch (error) {
+        document.getElementById('loading').style.display = 'none';
+        tg.showPopup({ title: 'Error', message: 'Failed to connect to server', buttons: [{type: 'ok'}] });
+    }
+};
+
+// Show chart button
+document.getElementById('showChartBtn').onclick = () => {
+    if (currentDailyData && !isAnimating) {
+        showChartModal(currentDailyData);
+    }
+};
+
+// Back button in modal
+document.getElementById('backBtn').onclick = () => {
+    stopAnimation();
+    document.getElementById('chartModal').style.display = 'none';
+};
+
+function displayResults(data) {
+    document.getElementById('balance').textContent = `${data.balance} ${selectedToken}`;
+    document.getElementById('txCount').textContent = data.txCount;
+    document.getElementById('incoming').textContent = `${data.incoming} ${selectedToken}`;
+    document.getElementById('outgoing').textContent = `${data.outgoing} ${selectedToken}`;
+    document.getElementById('insight').textContent = data.insight;
+    document.getElementById('gasFees').textContent = `0 ETH`;
+    
+    if (data.topSenders && data.topSenders.length > 0) {
+        document.getElementById('topSenders').innerHTML = data.topSenders.map(([addr, val]) => 
             `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
         ).join('');
-    } else if (topReceiversEl) {
-        topReceiversEl.innerHTML = 'no data';
+    } else {
+        document.getElementById('topSenders').innerHTML = 'no data';
+    }
+    
+    if (data.topReceivers && data.topReceivers.length > 0) {
+        document.getElementById('topReceivers').innerHTML = data.topReceivers.map(([addr, val]) => 
+            `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)} ${selectedToken}</div>`
+        ).join('');
+    } else {
+        document.getElementById('topReceivers').innerHTML = 'no data';
     }
     
     currentDailyData = data.dailyData;
     
-    if (currentDailyData && currentDailyData.length > 0 && chartBtn) {
-        chartBtn.classList.remove('hidden');
-    } else if (chartBtn) {
-        chartBtn.classList.add('hidden');
+    if (currentDailyData && currentDailyData.length > 0) {
+        document.getElementById('showChartBtn').style.display = 'block';
+    } else {
+        document.getElementById('showChartBtn').style.display = 'none';
     }
     
-    if (resultsEl) resultsEl.classList.remove('hidden');
+    document.getElementById('results').style.display = 'block';
     tg.ready();
 }
 
 function showChartModal(dailyData) {
     const canvas = document.getElementById('txChartModal');
     
-    if (!canvas || !dailyData || dailyData.length === 0) {
+    if (!dailyData || dailyData.length === 0) {
         return;
     }
     
@@ -291,9 +247,7 @@ function showChartModal(dailyData) {
             maintainAspectRatio: true,
             animation: false,
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 tooltip: {
                     backgroundColor: '#1a1a1a',
                     titleColor: '#F0E1B9',
@@ -310,42 +264,19 @@ function showChartModal(dailyData) {
             scales: {
                 y: {
                     beginAtZero: true,
-                    grid: { 
-                        color: 'rgba(212, 196, 168, 0.1)',
-                        lineWidth: 1
-                    },
-                    ticks: { 
-                        color: '#aaa', 
-                        stepSize: 1,
-                        font: { size: 11 }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Number of Transactions',
-                        color: '#888',
-                        font: { size: 11 }
-                    }
+                    grid: { color: 'rgba(212, 196, 168, 0.1)', lineWidth: 1 },
+                    ticks: { color: '#aaa', stepSize: 1, font: { size: 11 } },
+                    title: { display: true, text: 'Number of Transactions', color: '#888', font: { size: 11 } }
                 },
                 x: {
                     grid: { display: false },
-                    ticks: { 
-                        color: '#aaa', 
-                        maxRotation: 45, 
-                        autoSkip: true,
-                        font: { size: 11 }
-                    }
-                }
-            },
-            elements: {
-                line: {
-                    borderJoin: 'round'
+                    ticks: { color: '#aaa', maxRotation: 45, autoSkip: true, font: { size: 11 } }
                 }
             }
         }
     });
     
-    const modal = document.getElementById('chartModal');
-    if (modal) modal.classList.remove('hidden');
+    document.getElementById('chartModal').style.display = 'flex';
     
     setTimeout(() => {
         if (chart && !isAnimating) {
@@ -354,5 +285,5 @@ function showChartModal(dailyData) {
     }, 100);
 }
 
-// Показываем приветственный экран
+// Start
 showWelcomeScreen();
