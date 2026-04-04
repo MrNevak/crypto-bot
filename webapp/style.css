@@ -61,7 +61,7 @@ body {
     background: #1a1a1a;
     color: #ffffff;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     border-radius: 40px;
     font-size: 18px;
     font-weight: 600;
@@ -175,7 +175,7 @@ body {
     position: relative;
     overflow: hidden;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -257,7 +257,7 @@ body {
     flex: 1;
     padding: 12px;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 500;
@@ -296,7 +296,7 @@ body {
 #walletAddress {
     padding: 14px;
     border: 1px solid transparent;
-    background: linear-gradient(#0a0a0a, #0a0a0a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#0a0a0a, #0a0a0a) padding-box, #2a2a2a border-box;
     border-radius: 12px;
     font-size: 14px;
     color: #ffffff;
@@ -317,7 +317,7 @@ body {
     background: #1a1a1a;
     color: #ffffff;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     border-radius: 12px;
     font-size: 16px;
     font-weight: 600;
@@ -378,7 +378,7 @@ body {
     text-align: center;
     margin-bottom: 20px;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #0a0a0a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #0a0a0a) padding-box, #2a2a2a border-box;
     box-shadow: 0 0 10px rgba(212, 196, 168, 0.1);
 }
 
@@ -413,7 +413,7 @@ body {
     padding: 16px;
     text-align: center;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
 }
 
 .stat-label {
@@ -451,7 +451,7 @@ body {
     align-items: center;
     gap: 12px;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
 }
 
 .insight-icon {
@@ -470,7 +470,7 @@ body {
     border-radius: 12px;
     padding: 16px;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
 }
 
 .top-card h3 {
@@ -572,7 +572,7 @@ body {
     text-align: center;
     cursor: pointer;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     transition: transform 0.3s, box-shadow 0.3s;
 }
 
@@ -622,7 +622,7 @@ body {
     padding: 18px 20px;
     cursor: pointer;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     transition: all 0.3s;
     display: flex;
     align-items: center;
@@ -680,7 +680,7 @@ body {
     border-radius: 16px;
     cursor: pointer;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     transition: all 0.3s;
 }
 
@@ -768,7 +768,7 @@ body {
     width: 100%;
     height: auto;
     border: 1px solid transparent;
-    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, linear-gradient(135deg, #D4C4A8, #F0E1B9) border-box;
+    background: linear-gradient(#1a1a1a, #1a1a1a) padding-box, #2a2a2a border-box;
     box-shadow: 0 0 15px rgba(212, 196, 168, 0.1);
 }
 
