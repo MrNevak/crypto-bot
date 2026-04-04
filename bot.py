@@ -164,16 +164,18 @@ def get_sol_transactions(address, days=30):
 # ==========================================
 
 def get_bnb_balance(address):
-    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=balance&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
+        print(f"DEBUG BNB: {data}")  # Временная отладка
         if data.get("status") == "1":
             return int(data["result"]) / 10**18
         return 0
-    except:
+    except Exception as e:
+        print(f"ERROR: {e}")
         return 0
-
+        
 def get_bnb_transactions(address, days=30):
     url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
