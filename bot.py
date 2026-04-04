@@ -253,6 +253,18 @@ def analyze():
         balance = get_eth_balance(address)
         txs, incoming, outgoing = get_eth_transactions(address, days)
         insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
+
+        # BNB on BSC
+    elif coin == "BNB" and network == "bsc":
+        balance = get_bnb_balance(address)
+        txs, incoming, outgoing = get_bnb_transactions(address, days)
+        insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
+    
+    # USDT on BSC
+    elif coin == "USDT" and network == "bsc":
+        balance = get_usdt_bsc_balance(address)
+        txs, incoming, outgoing = get_usdt_bsc_transactions(address, days)
+        insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
     
     else:
         return jsonify({'error': f'Coin {coin} on network {network} not supported'}), 400
