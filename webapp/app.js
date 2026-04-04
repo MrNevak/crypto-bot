@@ -143,7 +143,7 @@ function displayResults(data) {
     // Баланс в выбранной валюте
     document.getElementById('balance').innerHTML = `${data.balance} ${selectedCoin}`;
     
-    // Конвертация в USDT (если есть данные)
+    // Конвертация в USD
     const usdEl = document.getElementById('balanceUsd');
     if (usdEl && data.balanceUsd !== undefined && data.balanceUsd > 0) {
         usdEl.innerHTML = `≈ $${data.balanceUsd} USD`;
@@ -158,10 +158,9 @@ function displayResults(data) {
     document.getElementById('insight').innerHTML = data.insight;
     document.getElementById('results').style.display = 'block';
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('topSenders').innerHTML = data.topSenders?.length ? data.topSenders.map(([addr, val]) => `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)}</div>`).join('') : 'no data';
-    document.getElementById('topReceivers').innerHTML = data.topReceivers?.length ? data.topReceivers.map(([addr, val]) => `<div>${addr.slice(0,6)}...${addr.slice(-4)}: ${val.toFixed(4)}</div>`).join('') : 'no data';
+    document.getElementById('showChartBtn').style.display = data.dailyData?.length > 0 ? 'block' : 'none';
+    
     currentDailyData = data.dailyData;
-    if (currentDailyData?.length > 0) document.getElementById('showChartBtn').style.display = 'block';
     tg.ready();
 }
 
