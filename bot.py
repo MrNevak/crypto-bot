@@ -54,42 +54,21 @@ def get_usd_price(coin):
 # ETHEREUM BALANCE
 # ==========================================
 def get_eth_balance(address):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "balance",
-        "address": address,
-        "tag": "latest",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
+    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=balance&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    resp = requests.get(url)
     data = resp.json()
     if data.get("status") == "1":
         return int(data["result"]) / 10**18
     return 0
 
 def get_eth_transactions(address, days=30):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "txlist",
-        "address": address,
-        "startblock": "0",
-        "endblock": "99999999",
-        "sort": "desc",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
+    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
+    resp = requests.get(url)
     data = resp.json()
-    
     if data.get("status") != "1":
         return [], 0, 0
-    
     cutoff = int(time.time()) - days * 86400
     txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
-    
     incoming = 0
     outgoing = 0
     for tx in txs:
@@ -98,51 +77,26 @@ def get_eth_transactions(address, days=30):
             incoming += value
         elif tx.get("from", "").lower() == address.lower():
             outgoing += value
-    
     return txs, incoming, outgoing
-
 # ==========================================
 # USDT ETHEREUM
 # ==========================================
 def get_usdt_balance(address):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "tokenbalance",
-        "contractaddress": USDT_CONTRACT,
-        "address": address,
-        "tag": "latest",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
+    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=tokenbalance&contractaddress={USDT_CONTRACT}&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    resp = requests.get(url)
     data = resp.json()
     if data.get("status") == "1":
         return int(data["result"]) / 10**6
     return 0
 
 def get_usdt_transactions(address, days=30):
-    url = "https://api.etherscan.io/v2/api"
-    params = {
-        "chainid": 1,
-        "module": "account",
-        "action": "tokentx",
-        "contractaddress": USDT_CONTRACT,
-        "address": address,
-        "startblock": "0",
-        "endblock": "99999999",
-        "sort": "desc",
-        "apikey": ETHERSCAN_API_KEY
-    }
-    resp = requests.get(url, params=params)
+    url = f"https://api.etherscan.io/v2/api?chainid=1&module=account&action=tokentx&contractaddress={USDT_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
+    resp = requests.get(url)
     data = resp.json()
-    
     if data.get("status") != "1":
         return [], 0, 0
-    
     cutoff = int(time.time()) - days * 86400
     txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
-    
     incoming = 0
     outgoing = 0
     for tx in txs:
@@ -151,9 +105,7 @@ def get_usdt_transactions(address, days=30):
             incoming += value
         elif tx.get("from", "").lower() == address.lower():
             outgoing += value
-    
     return txs, incoming, outgoing
-
 # ==========================================
 # BITCOIN
 # ==========================================
@@ -212,29 +164,25 @@ def get_sol_transactions(address, days=30):
 # ==========================================
 
 def get_bnb_balance(address):
-    url = f"https://api.bscscan.com/api?module=account&action=balance&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=balance&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
-        print(f"BNB balance response: {data}")  # Отладка
         if data.get("status") == "1":
             return int(data["result"]) / 10**18
         return 0
-    except Exception as e:
-        print(f"BNB balance error: {e}")
+    except:
         return 0
 
 def get_bnb_transactions(address, days=30):
-    url = f"https://api.bscscan.com/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
         if data.get("status") != "1":
             return [], 0, 0
-        
         cutoff = int(time.time()) - days * 86400
         txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
-        
         incoming = 0
         outgoing = 0
         for tx in txs:
@@ -250,11 +198,10 @@ def get_bnb_transactions(address, days=30):
 # ==========================================
 # USDT BSC CONTRACT
 # ==========================================
-
 USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
 
 def get_usdt_bsc_balance(address):
-    url = f"https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
@@ -265,16 +212,14 @@ def get_usdt_bsc_balance(address):
         return 0
 
 def get_usdt_bsc_transactions(address, days=30):
-    url = f"https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
+    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
         if data.get("status") != "1":
             return [], 0, 0
-        
         cutoff = int(time.time()) - days * 86400
         txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
-        
         incoming = 0
         outgoing = 0
         for tx in txs:
