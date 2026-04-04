@@ -31,7 +31,9 @@ const networks = {
         { id: "optimism", name: "Optimism", icon: "icons/optimism-ethereum-op-logo.svg", description: "Optimism" },
         { id: "avalanche", name: "Avalanche", icon: "icons/avalanche-avax-logo.svg", description: "AVAX" }
     ],
-    BNB: [{ id: "bsc", name: "BNB Chain", icon: "icons/bnb-bnb-logo.svg", description: "BSC Mainnet" }],
+    BNB: [
+    { id: "bsc", name: "BNB Chain", icon: "icons/bnb-bnb-logo.svg", description: "BSC Mainnet" }
+],
     SOL: [{ id: "solana", name: "Solana", icon: "icons/solana-sol-logo.svg", description: "Solana Mainnet" }],
     TON: [{ id: "ton", name: "TON", icon: "icons/toncoin-ton-logo.svg", description: "TON Mainnet" }]
 };
