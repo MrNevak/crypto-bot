@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO)
 
 TOKEN = "8631940655:AAEGkEEL3yHKMUB-qI0K9sYyFOyBaclnc10"
 ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
-BSCSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
+
 USDT_CONTRACT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
 # Цены монет в USD (кэш на 5 минут)
@@ -212,7 +212,7 @@ def get_sol_transactions(address, days=30):
 # ==========================================
 
 def get_bnb_balance(address):
-    url = f"https://api.bscscan.com/api?module=account&action=balance&address={address}&tag=latest&apikey={BSCSCAN_API_KEY}"
+    url = f"https://api.bscscan.com/api?module=account&action=balance&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
@@ -223,7 +223,7 @@ def get_bnb_balance(address):
         return 0
 
 def get_bnb_transactions(address, days=30):
-    url = f"https://api.bscscan.com/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={BSCSCAN_API_KEY}"
+    url = f"https://api.bscscan.com/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
@@ -252,7 +252,7 @@ def get_bnb_transactions(address, days=30):
 USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
 
 def get_usdt_bsc_balance(address):
-    url = f"https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={BSCSCAN_API_KEY}"
+    url = f"https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
@@ -263,7 +263,7 @@ def get_usdt_bsc_balance(address):
         return 0
 
 def get_usdt_bsc_transactions(address, days=30):
-    url = f"https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={BSCSCAN_API_KEY}"
+    url = f"https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
         resp = requests.get(url)
         data = resp.json()
