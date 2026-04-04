@@ -164,22 +164,18 @@ def get_sol_transactions(address, days=30):
 # ==========================================
 
 def get_bnb_balance(address):
-    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
     try:
-        resp = requests.get(url)
+        resp = requests.get(f"https://api.bscscan.com/api?module=account&action=balance&address={address}&tag=latest")
         data = resp.json()
-        print(f"DEBUG BNB: {data}")  # Временная отладка
         if data.get("status") == "1":
             return int(data["result"]) / 10**18
         return 0
-    except Exception as e:
-        print(f"ERROR: {e}")
+    except:
         return 0
-        
+
 def get_bnb_transactions(address, days=30):
-    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
     try:
-        resp = requests.get(url)
+        resp = requests.get(f"https://api.bscscan.com/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc")
         data = resp.json()
         if data.get("status") != "1":
             return [], 0, 0
@@ -196,16 +192,11 @@ def get_bnb_transactions(address, days=30):
         return txs, incoming, outgoing
     except:
         return [], 0, 0
-        
-# ==========================================
-# USDT BSC CONTRACT
-# ==========================================
-USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
 
 def get_usdt_bsc_balance(address):
-    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={ETHERSCAN_API_KEY}"
+    USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
     try:
-        resp = requests.get(url)
+        resp = requests.get(f"https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest")
         data = resp.json()
         if data.get("status") == "1":
             return int(data["result"]) / 10**18
@@ -214,9 +205,9 @@ def get_usdt_bsc_balance(address):
         return 0
 
 def get_usdt_bsc_transactions(address, days=30):
-    url = f"https://api.etherscan.io/v2/api?chainid=56&module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={ETHERSCAN_API_KEY}"
+    USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
     try:
-        resp = requests.get(url)
+        resp = requests.get(f"https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc")
         data = resp.json()
         if data.get("status") != "1":
             return [], 0, 0
@@ -233,7 +224,6 @@ def get_usdt_bsc_transactions(address, days=30):
         return txs, incoming, outgoing
     except:
         return [], 0, 0
-
 # ==========================================
 # FLASK APP
 # ==========================================
