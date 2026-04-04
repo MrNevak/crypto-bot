@@ -153,8 +153,12 @@ function displayResults(data) {
     }
     
     document.getElementById('txCount').innerHTML = data.txCount;
-    document.getElementById('incoming').innerHTML = `${data.incoming} ${selectedCoin}`;
-    document.getElementById('outgoing').innerHTML = `${data.outgoing} ${selectedCoin}`;
+    let incomingFormatted = data.incoming;
+    let outgoingFormatted = data.outgoing;
+    if (data.incoming > 1000) incomingFormatted = data.incoming.toFixed(2);
+    if (data.outgoing > 1000) outgoingFormatted = data.outgoing.toFixed(2);
+    document.getElementById('incoming').innerHTML = `${incomingFormatted} ${selectedCoin}`;
+    document.getElementById('outgoing').innerHTML = `${outgoingFormatted} ${selectedCoin}`;
     document.getElementById('insight').innerHTML = data.insight;
     document.getElementById('results').style.display = 'block';
     document.getElementById('loading').style.display = 'none';
