@@ -216,10 +216,12 @@ def get_bnb_balance(address):
     try:
         resp = requests.get(url)
         data = resp.json()
+        print(f"BNB balance response: {data}")  # Отладка
         if data.get("status") == "1":
             return int(data["result"]) / 10**18
         return 0
-    except:
+    except Exception as e:
+        print(f"BNB balance error: {e}")
         return 0
 
 def get_bnb_transactions(address, days=30):
