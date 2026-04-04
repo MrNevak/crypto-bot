@@ -161,7 +161,11 @@ def get_btc_balance(address):
     try:
         resp = requests.get(f"https://mempool.space/api/address/{address}")
         data = resp.json()
-        return data.get("chain_stats", {}).get("balance", 0) / 10**8
+        chain_stats = data.get("chain_stats", {})
+        funded = chain_stats.get("funded_txo_sum", 0)
+        spent = chain_stats.get("spent_txo_sum", 0)
+        balance_sat = funded - spent
+        return balance_sat / 10**8
     except:
         return 0
 
