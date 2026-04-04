@@ -16,6 +16,8 @@ ETHERSCAN_API_KEY = "4YDW7PM5GMKMVU7GZC3BGRCI2M957VHTX5"
 
 USDT_CONTRACT = "0xdAC17F958D2ee523a2206206994597C13D831ec7"
 
+BSCSCAN_API_KEY = ""
+
 # Цены монет в USD (кэш на 5 минут)
 price_cache = {}
 price_cache_time = {}
@@ -206,6 +208,85 @@ def get_sol_balance(address):
 def get_sol_transactions(address, days=30):
     return [], 0, 0
 
+
+# ==========================================
+# BNB BALANCE
+# ==========================================
+
+def get_bnb_balance(address):
+    url = f"https://api.bscscan.com/api?module=account&action=balance&address={address}&tag=latest&apikey={BSCSCAN_API_KEY}"
+    try:
+        resp = requests.get(url)
+        data = resp.json()
+        if data.get("status") == "1":
+            return int(data["result"]) / 10**18
+        return 0
+    except:
+        return 0
+
+def get_bnb_transactions(address, days=30):
+    url = f"https://api.bscscan.com/api?module=account&action=txlist&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={BSCSCAN_API_KEY}"
+    try:
+        resp = requests.get(url)
+        data = resp.json()
+        if data.get("status") != "1":
+            return [], 0, 0
+        
+        cutoff = int(time.time()) - days * 86400
+        txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
+        
+        incoming = 0
+        outgoing = 0
+        for tx in txs:
+            value = int(tx["value"]) / 10**18
+            if tx.get("to", "").lower() == address.lower():
+                incoming += value
+            elif tx.get("from", "").lower() == address.lower():
+                outgoing += value
+        return txs, incoming, outgoing
+    except:
+        return [], 0, 0
+        
+# ==========================================
+# USDT BSC CONTRACT
+# ==========================================
+
+USDT_BSC_CONTRACT = "0x55d398326f99059fF775485246999027B3197955"
+
+def get_usdt_bsc_balance(address):
+    url = f"https://api.bscscan.com/api?module=account&action=tokenbalance&contractaddress={USDT_BSC_CONTRACT}&address={address}&tag=latest&apikey={BSCSCAN_API_KEY}"
+    try:
+        resp = requests.get(url)
+        data = resp.json()
+        if data.get("status") == "1":
+            return int(data["result"]) / 10**18
+        return 0
+    except:
+        return 0
+
+def get_usdt_bsc_transactions(address, days=30):
+    url = f"https://api.bscscan.com/api?module=account&action=tokentx&contractaddress={USDT_BSC_CONTRACT}&address={address}&startblock=0&endblock=99999999&sort=desc&apikey={BSCSCAN_API_KEY}"
+    try:
+        resp = requests.get(url)
+        data = resp.json()
+        if data.get("status") != "1":
+            return [], 0, 0
+        
+        cutoff = int(time.time()) - days * 86400
+        txs = [tx for tx in data["result"] if int(tx["timeStamp"]) >= cutoff]
+        
+        incoming = 0
+        outgoing = 0
+        for tx in txs:
+            value = int(tx["value"]) / 10**18
+            if tx.get("to", "").lower() == address.lower():
+                incoming += value
+            elif tx.get("from", "").lower() == address.lower():
+                outgoing += value
+        return txs, incoming, outgoing
+    except:
+        return [], 0, 0
+
 # ==========================================
 # FLASK APP
 # ==========================================
@@ -254,7 +335,7 @@ def analyze():
         txs, incoming, outgoing = get_eth_transactions(address, days)
         insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
 
-        # BNB on BSC
+    # BNB on BSC
     elif coin == "BNB" and network == "bsc":
         balance = get_bnb_balance(address)
         txs, incoming, outgoing = get_bnb_transactions(address, days)
@@ -265,7 +346,7 @@ def analyze():
         balance = get_usdt_bsc_balance(address)
         txs, incoming, outgoing = get_usdt_bsc_transactions(address, days)
         insight = "You receive more than you send" if incoming > outgoing else "You spend more than you receive" if outgoing > incoming else "Balance of flows is approximately equal"
-    
+        
     else:
         return jsonify({'error': f'Coin {coin} on network {network} not supported'}), 400
     
