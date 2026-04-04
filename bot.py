@@ -274,11 +274,11 @@ def analyze():
     daily_data = [{'date': d, 'count': daily[d]} for d in sorted(daily.keys())]
     
     result = {
-        'balance': round(balance, 6),
+        'balance': balance,
         'balanceUsd': round(balance_usd, 2),
         'txCount': len(txs),
-        'incoming': round(incoming, 6),
-        'outgoing': round(outgoing, 6),
+        'incoming': incoming,
+        'outgoing': outgoing,
         'insight': insight,
         'topSenders': [],
         'topReceivers': [],
@@ -287,7 +287,7 @@ def analyze():
     
     print(f"Result: balance={balance}, balanceUsd={balance_usd}")
     return jsonify(result)
-
+    
 def run_flask():
     flask_app.run(host='0.0.0.0', port=8080)
 
